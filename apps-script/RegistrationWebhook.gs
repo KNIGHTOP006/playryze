@@ -3,7 +3,7 @@ const VOLUNTEER_SHEET_NAME = 'Volunteers';
 const OWNER_EMAIL = 'your@email.com';
 const DRIVE_FOLDER_ID = 'OPTIONAL_DRIVE_FOLDER_ID';
 
-function doPost(e) {
+function doPost(e) {  
   try {
     const payload = JSON.parse(e.postData.contents || '{}');
     const submissionType = inferSubmissionType_(payload);
