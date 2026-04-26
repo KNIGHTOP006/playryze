@@ -1077,20 +1077,20 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         <div class="form-title">TEAM DETAILS</div>
         <div class="form-group">
           <label class="form-label">Team Name *</label>
-          <input type="text" class="form-input" placeholder="e.g. FC Indiranagar">
+          <input type="text" class="form-input" id="teamName" placeholder="e.g. FC Indiranagar">
         </div>
         <div class="form-group">
           <label class="form-label">Captain Name *</label>
-          <input type="text" class="form-input" placeholder="Full name">
+          <input type="text" class="form-input" id="captainName" placeholder="Full name">
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Phone *</label>
-            <input type="tel" class="form-input" placeholder="+91 XXXXX XXXXX">
+            <input type="tel" class="form-input" id="captainPhone" placeholder="+91 XXXXX XXXXX">
           </div>
           <div class="form-group">
             <label class="form-label">Email *</label>
-            <input type="email" class="form-input" placeholder="captain@email.com">
+            <input type="email" class="form-input" id="captainEmail" placeholder="captain@email.com">
           </div>
         </div>
         <div class="form-btns">
@@ -1103,11 +1103,11 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         <div class="form-title">PLAYER INFO</div>
         <div class="form-group">
           <label class="form-label">College / Institution *</label>
-          <input type="text" class="form-input" placeholder="e.g. RV College of Engineering">
+          <input type="text" class="form-input" id="collegeName" placeholder="e.g. RV College of Engineering">
         </div>
         <div class="form-group">
           <label class="form-label">Team Size *</label>
-          <select class="form-input form-select">
+          <select class="form-input form-select" id="teamSize">
             <option value="">Select team size</option>
             <option value="5">5 Players (Minimum)</option>
             <option value="6">6 Players</option>
@@ -1117,11 +1117,11 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         </div>
         <div class="form-group">
           <label class="form-label">Player Names (comma separated) *</label>
-          <input type="text" class="form-input" placeholder="Rahul, Arun, Kiran, Arjun, Dev">
+          <input type="text" class="form-input" id="playerNames" placeholder="Rahul, Arun, Kiran, Arjun, Dev">
         </div>
         <div class="form-group">
           <label class="form-label">Age Verification</label>
-          <select class="form-input form-select">
+          <select class="form-input form-select" id="ageVerified">
             <option value="">All players aged 18–25?</option>
             <option value="yes">Yes, all players are 18–25</option>
           </select>
@@ -1161,11 +1161,12 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         </div>
         <div class="form-group">
           <label class="form-label">Transaction ID</label>
-          <input type="text" class="form-input" placeholder="UPI transaction ID">
+          <input type="text" class="form-input" id="transactionId" placeholder="UPI transaction ID">
         </div>
         <div class="form-btns">
           <button class="btn-form-prev" onclick="prevStep(4)">← Back</button>
-          <button class="btn-form-next" onclick="submitForm()">Confirm Registration →</button>
+          <div id="registrationStatus" style="display:none;margin-top:12px;font-size:12px;font-family:'Space Mono',monospace;"></div>
+          <button class="btn-form-next" id="submitRegistrationBtn" onclick="submitForm()">Confirm Registration →</button>
         </div>
       </div>
 
@@ -1570,6 +1571,54 @@ reveals.forEach(el => observer.observe(el));
 // FORM STEPS
 let currentStep = 1;
 const totalSteps = 4;
+const REGISTRATION_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbx6HJWe38JGZWem1KHyixEGccf5RjmyeH-Zi5GGIcI90MBSqejFyiZfipgnNLNDJRz6/exec';
+
+function getRegistrationPayload() {
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+  return {
+    teamName: document.getElementById('teamName').value.trim(),
+    captainName: document.getElementById('captainName').value.trim(),
+    captainPhone: document.getElementById('captainPhone').value.trim(),
+    captainEmail: document.getElementById('captainEmail').value.trim(),
+    collegeName: document.getElementById('collegeName').value.trim(),
+    teamSize: document.getElementById('teamSize').value,
+    playerNames: document.getElementById('playerNames').value.trim(),
+    ageVerified: document.getElementById('ageVerified').value,
+    transactionId: document.getElementById('transactionId').value.trim(),
+    screenshotName: file ? file.name : '',
+    screenshotMimeType: file ? file.type : '',
+    source: 'playryze-website'
+  };
+}
+
+function validateRegistrationPayload(payload) {
+  if (!payload.teamName || !payload.captainName || !payload.captainPhone || !payload.captainEmail || !payload.collegeName || !payload.teamSize || !payload.playerNames) {
+    throw new Error('Please fill in all required fields before submitting.');
+  }
+}
+
+function setRegistrationStatus(message, isError) {
+  const status = document.getElementById('registrationStatus');
+  status.style.display = 'block';
+  status.style.color = isError ? '#ff8a8a' : 'var(--lime)';
+  status.textContent = message;
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result || '');
+      const base64 = result.includes(',') ? result.split(',')[1] : result;
+      resolve(base64);
+    };
+    reader.onerror = () => reject(new Error('Could not read the uploaded file.'));
+    reader.readAsDataURL(file);
+  });
+}
+
 function updateProgress(step) {
   const bars = document.querySelectorAll('.form-progress-bar');
   bars.forEach((b, i) => { b.classList.toggle('done', i < step); });
@@ -1589,10 +1638,50 @@ function prevStep(step) {
   currentStep = prev;
   updateProgress(prev);
 }
-function submitForm() {
-  document.getElementById('step4').classList.remove('active');
-  document.getElementById('stepSuccess').classList.add('active');
-  document.querySelector('.form-progress').style.display = 'none';
+async function submitForm() {
+  const submitButton = document.getElementById('submitRegistrationBtn');
+
+  try {
+    if (REGISTRATION_WEBHOOK_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+      throw new Error('Add your Google Apps Script web app URL before using the live form.');
+    }
+
+    const payload = getRegistrationPayload();
+    validateRegistrationPayload(payload);
+
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+    if (file) {
+      payload.screenshotBase64 = await fileToBase64(file);
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+    setRegistrationStatus('Sending registration...', false);
+
+    const response = await fetch(REGISTRATION_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || 'Registration failed. Please try again.');
+    }
+
+    document.getElementById('step4').classList.remove('active');
+    document.getElementById('stepSuccess').classList.add('active');
+    document.querySelector('.form-progress').style.display = 'none';
+  } catch (error) {
+    setRegistrationStatus(error.message || 'Something went wrong. Please try again.', true);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = 'Confirm Registration →';
+  }
 }
 function handleUpload(input) {
   const confirm = document.getElementById('uploadConfirm');
