@@ -1374,29 +1374,29 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         <div id="volForm">
           <div class="form-group">
             <label class="form-label">Full Name *</label>
-            <input type="text" class="form-input" placeholder="Your name">
+            <input type="text" class="form-input" id="volunteerName" placeholder="Your name">
           </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Phone *</label>
-              <input type="tel" class="form-input" placeholder="+91 XXXXX XXXXX">
+              <input type="tel" class="form-input" id="volunteerPhone" placeholder="+91 XXXXX XXXXX">
             </div>
             <div class="form-group">
               <label class="form-label">Age *</label>
-              <input type="number" class="form-input" placeholder="e.g. 20">
+              <input type="number" class="form-input" id="volunteerAge" placeholder="e.g. 20">
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">Email *</label>
-            <input type="email" class="form-input" placeholder="you@email.com">
+            <input type="email" class="form-input" id="volunteerEmail" placeholder="you@email.com">
           </div>
           <div class="form-group">
             <label class="form-label">College / Institution *</label>
-            <input type="text" class="form-input" placeholder="e.g. Christ University">
+            <input type="text" class="form-input" id="volunteerCollege" placeholder="e.g. Christ University">
           </div>
           <div class="form-group">
             <label class="form-label">Preferred Role *</label>
-            <select class="form-input form-select">
+            <select class="form-input form-select" id="volunteerRole">
               <option value="">Select a role</option>
               <option>Event Coordinator</option>
               <option>Media & Content</option>
@@ -1409,18 +1409,19 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
           </div>
           <div class="form-group">
             <label class="form-label">Why do you want to volunteer?</label>
-            <textarea class="form-input" rows="3" placeholder="Tell us in 2-3 sentences..." style="resize:none;font-family:'DM Sans',sans-serif;"></textarea>
+            <textarea class="form-input" id="volunteerReason" rows="3" placeholder="Tell us in 2-3 sentences..." style="resize:none;font-family:'DM Sans',sans-serif;"></textarea>
           </div>
           <div class="form-group">
             <label class="form-label">Available on May 24–25?</label>
-            <select class="form-input form-select">
+            <select class="form-input form-select" id="volunteerAvailability">
               <option value="">Select availability</option>
               <option>Both days (May 24 & 25)</option>
               <option>May 24 only</option>
               <option>May 25 only</option>
             </select>
           </div>
-          <button class="btn-form-next" style="width:100%;margin-top:8px;" onclick="submitVolunteer()">Submit Application →</button>
+          <div id="volunteerStatus" style="display:none;margin-top:12px;font-size:12px;font-family:'Space Mono',monospace;"></div>
+          <button class="btn-form-next" id="submitVolunteerBtn" style="width:100%;margin-top:8px;" onclick="submitVolunteer()">Submit Application →</button>
         </div>
         <div id="volSuccess" style="display:none;">
           <div class="success-state">
@@ -1619,6 +1620,34 @@ function fileToBase64(file) {
   });
 }
 
+function getVolunteerPayload() {
+  return {
+    type: 'volunteer',
+    fullName: document.getElementById('volunteerName').value.trim(),
+    phone: document.getElementById('volunteerPhone').value.trim(),
+    age: document.getElementById('volunteerAge').value.trim(),
+    email: document.getElementById('volunteerEmail').value.trim(),
+    collegeName: document.getElementById('volunteerCollege').value.trim(),
+    preferredRole: document.getElementById('volunteerRole').value,
+    reason: document.getElementById('volunteerReason').value.trim(),
+    availability: document.getElementById('volunteerAvailability').value,
+    source: 'playryze-volunteer-form'
+  };
+}
+
+function validateVolunteerPayload(payload) {
+  if (!payload.fullName || !payload.phone || !payload.age || !payload.email || !payload.collegeName || !payload.preferredRole || !payload.availability) {
+    throw new Error('Please fill in all required volunteer fields before submitting.');
+  }
+}
+
+function setVolunteerStatus(message, isError) {
+  const status = document.getElementById('volunteerStatus');
+  status.style.display = 'block';
+  status.style.color = isError ? '#ff8a8a' : 'var(--lime)';
+  status.textContent = message;
+}
+
 function updateProgress(step) {
   const bars = document.querySelectorAll('.form-progress-bar');
   bars.forEach((b, i) => { b.classList.toggle('done', i < step); });
@@ -1710,9 +1739,42 @@ const slotObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 if (slotBar) slotObserver.observe(slotBar);
 
-function submitVolunteer() {
-  document.getElementById('volForm').style.display = 'none';
-  document.getElementById('volSuccess').style.display = 'block';
+async function submitVolunteer() {
+  const submitButton = document.getElementById('submitVolunteerBtn');
+
+  try {
+    if (REGISTRATION_WEBHOOK_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+      throw new Error('Add your Google Apps Script web app URL before using the live volunteer form.');
+    }
+
+    const payload = getVolunteerPayload();
+    validateVolunteerPayload(payload);
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+    setVolunteerStatus('Sending application...', false);
+
+    const response = await fetch(REGISTRATION_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || 'Volunteer application failed. Please try again.');
+    }
+
+    document.getElementById('volForm').style.display = 'none';
+    document.getElementById('volSuccess').style.display = 'block';
+  } catch (error) {
+    setVolunteerStatus(error.message || 'Something went wrong. Please try again.', true);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = 'Submit Application →';
+  }
 }
 </script>
 </body>

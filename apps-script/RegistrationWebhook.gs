@@ -1,34 +1,92 @@
-const SHEET_NAME = 'Registrations';
+const REGISTRATION_SHEET_NAME = 'Registrations';
+const VOLUNTEER_SHEET_NAME = 'Volunteers';
 const OWNER_EMAIL = 'your@email.com';
 const DRIVE_FOLDER_ID = 'OPTIONAL_DRIVE_FOLDER_ID';
 
 function doPost(e) {
   try {
     const payload = JSON.parse(e.postData.contents || '{}');
-    validatePayload_(payload);
-
+    const submissionType = payload.type || 'registration';
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = getOrCreateSheet_(spreadsheet, SHEET_NAME);
-    const upload = saveUploadIfPresent_(payload);
 
-    sheet.appendRow([
-      new Date(),
-      payload.teamName,
-      payload.captainName,
-      payload.captainPhone,
-      payload.captainEmail,
-      payload.collegeName,
-      payload.teamSize,
-      payload.playerNames,
-      payload.ageVerified,
-      payload.transactionId,
-      upload ? upload.url : '',
-      upload ? upload.name : '',
-      payload.source || 'website'
-    ]);
+    if (submissionType === 'volunteer') {
+      validateVolunteerPayload_(payload);
 
-    sendOwnerEmail_(payload, upload);
-    sendConfirmationEmail_(payload);
+      const volunteerSheet = getOrCreateSheet_(
+        spreadsheet,
+        VOLUNTEER_SHEET_NAME,
+        [
+          'Submitted At',
+          'Full Name',
+          'Phone',
+          'Age',
+          'Email',
+          'College',
+          'Preferred Role',
+          'Reason',
+          'Availability',
+          'Source'
+        ]
+      );
+
+      volunteerSheet.appendRow([
+        new Date(),
+        payload.fullName,
+        payload.phone,
+        payload.age,
+        payload.email,
+        payload.collegeName,
+        payload.preferredRole,
+        payload.reason,
+        payload.availability,
+        payload.source || 'website'
+      ]);
+
+      sendVolunteerOwnerEmail_(payload);
+      sendVolunteerConfirmationEmail_(payload);
+    } else {
+      validateRegistrationPayload_(payload);
+
+      const registrationSheet = getOrCreateSheet_(
+        spreadsheet,
+        REGISTRATION_SHEET_NAME,
+        [
+          'Submitted At',
+          'Team Name',
+          'Captain Name',
+          'Captain Phone',
+          'Captain Email',
+          'College',
+          'Team Size',
+          'Player Names',
+          'Age Verified',
+          'Transaction ID',
+          'Screenshot URL',
+          'Screenshot Filename',
+          'Source'
+        ]
+      );
+      const upload = saveUploadIfPresent_(payload);
+
+      registrationSheet.appendRow([
+        new Date(),
+        payload.teamName,
+        payload.captainName,
+        payload.captainPhone,
+        payload.captainEmail,
+        payload.collegeName,
+        payload.teamSize,
+        payload.playerNames,
+        payload.ageVerified,
+        payload.transactionId,
+        upload ? upload.url : '',
+        upload ? upload.name : '',
+        payload.source || 'website'
+      ]);
+
+      sendRegistrationOwnerEmail_(payload, upload);
+      sendRegistrationConfirmationEmail_(payload);
+    }
 
     return jsonResponse_({ ok: true });
   } catch (error) {
@@ -43,7 +101,7 @@ function doGet() {
   return jsonResponse_({ ok: true, message: 'Registration webhook is live.' });
 }
 
-function validatePayload_(payload) {
+function validateRegistrationPayload_(payload) {
   const requiredFields = [
     'teamName',
     'captainName',
@@ -61,25 +119,29 @@ function validatePayload_(payload) {
   });
 }
 
-function getOrCreateSheet_(spreadsheet, name) {
+function validateVolunteerPayload_(payload) {
+  const requiredFields = [
+    'fullName',
+    'phone',
+    'age',
+    'email',
+    'collegeName',
+    'preferredRole',
+    'availability'
+  ];
+
+  requiredFields.forEach((field) => {
+    if (!payload[field]) {
+      throw new Error('Missing required field: ' + field);
+    }
+  });
+}
+
+function getOrCreateSheet_(spreadsheet, name, headers) {
   let sheet = spreadsheet.getSheetByName(name);
   if (!sheet) {
     sheet = spreadsheet.insertSheet(name);
-    sheet.appendRow([
-      'Submitted At',
-      'Team Name',
-      'Captain Name',
-      'Captain Phone',
-      'Captain Email',
-      'College',
-      'Team Size',
-      'Player Names',
-      'Age Verified',
-      'Transaction ID',
-      'Screenshot URL',
-      'Screenshot Filename',
-      'Source'
-    ]);
+    sheet.appendRow(headers);
   }
 
   return sheet;
@@ -106,7 +168,7 @@ function saveUploadIfPresent_(payload) {
   };
 }
 
-function sendOwnerEmail_(payload, upload) {
+function sendRegistrationOwnerEmail_(payload, upload) {
   const subject = 'New PlayRyze Registration: ' + payload.teamName;
   const body = [
     'A new team has registered on the PlayRyze website.',
@@ -126,7 +188,7 @@ function sendOwnerEmail_(payload, upload) {
   GmailApp.sendEmail(OWNER_EMAIL, subject, body);
 }
 
-function sendConfirmationEmail_(payload) {
+function sendRegistrationConfirmationEmail_(payload) {
   const subject = 'PlayRyze Registration Received';
   const body = [
     'Hi ' + payload.captainName + ',',
@@ -146,6 +208,43 @@ function sendConfirmationEmail_(payload) {
   ].join('\n');
 
   GmailApp.sendEmail(payload.captainEmail, subject, body);
+}
+
+function sendVolunteerOwnerEmail_(payload) {
+  const subject = 'New Volunteer Application: ' + payload.fullName;
+  const body = [
+    'A new volunteer application has been submitted on the PlayRyze website.',
+    '',
+    'Full Name: ' + payload.fullName,
+    'Phone: ' + payload.phone,
+    'Age: ' + payload.age,
+    'Email: ' + payload.email,
+    'College: ' + payload.collegeName,
+    'Preferred Role: ' + payload.preferredRole,
+    'Availability: ' + payload.availability,
+    'Reason: ' + (payload.reason || 'Not provided')
+  ].join('\n');
+
+  GmailApp.sendEmail(OWNER_EMAIL, subject, body);
+}
+
+function sendVolunteerConfirmationEmail_(payload) {
+  const subject = 'PlayRyze Volunteer Application Received';
+  const body = [
+    'Hi ' + payload.fullName + ',',
+    '',
+    'Thanks for applying to volunteer with PlayRyze.',
+    'We have received your application and will reach out with the next steps soon.',
+    '',
+    'Application summary:',
+    'Preferred Role: ' + payload.preferredRole,
+    'Availability: ' + payload.availability,
+    'College: ' + payload.collegeName,
+    '',
+    'Team PlayRyze'
+  ].join('\n');
+
+  GmailApp.sendEmail(payload.email, subject, body);
 }
 
 function jsonResponse_(data) {
