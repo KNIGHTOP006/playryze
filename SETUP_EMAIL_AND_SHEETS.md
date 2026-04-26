@@ -23,10 +23,12 @@ This site is a static HTML page, so the easiest backend is Google Apps Script.
 Edit these values near the top:
 
 ```js
+const SPREADSHEET_ID = 'PASTE_YOUR_GOOGLE_SHEET_ID_HERE';
 const OWNER_EMAIL = 'your@email.com';
 const DRIVE_FOLDER_ID = 'OPTIONAL_DRIVE_FOLDER_ID';
 ```
 
+- Set `SPREADSHEET_ID` to the ID from your Google Sheet URL.
 - Set `OWNER_EMAIL` to the inbox where you want the alerts.
 - Set `DRIVE_FOLDER_ID` if you want registration screenshot uploads saved in Drive.
 - If you do not need screenshot storage, leave `DRIVE_FOLDER_ID` as-is.

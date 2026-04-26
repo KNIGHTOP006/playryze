@@ -1,5 +1,6 @@
 const REGISTRATION_SHEET_NAME = 'Registrations';
 const VOLUNTEER_SHEET_NAME = 'Volunteers';
+const SPREADSHEET_ID = 'PASTE_YOUR_GOOGLE_SHEET_ID_HERE';
 const OWNER_EMAIL = 'your@email.com';
 const DRIVE_FOLDER_ID = 'OPTIONAL_DRIVE_FOLDER_ID';
 
@@ -7,7 +8,7 @@ function doPost(e) {
   try {
     const payload = JSON.parse(e.postData.contents || '{}');
     const submissionType = inferSubmissionType_(payload);
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    const spreadsheet = getSpreadsheet_();
 
     if (submissionType === 'volunteer') {
       validateVolunteerPayload_(payload);
@@ -99,6 +100,14 @@ function doPost(e) {
 
 function doGet() {
   return jsonResponse_({ ok: true, message: 'Registration webhook is live.' });
+}
+
+function getSpreadsheet_() {
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === 'PASTE_YOUR_GOOGLE_SHEET_ID_HERE') {
+    throw new Error('Add your Google Sheet ID in SPREADSHEET_ID before using the webhook.');
+  }
+
+  return SpreadsheetApp.openById(SPREADSHEET_ID);
 }
 
 function inferSubmissionType_(payload) {
