@@ -668,6 +668,24 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   .divider { margin: 0 20px; }
   .dash-tabs { overflow-x: auto; }
 }
+
+/* VOLUNTEER SECTION */
+.volunteer-section { background: var(--black); padding: 120px 48px; }
+.vol-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+.vol-desc { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.8; margin: 24px 0 40px; }
+.vol-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+.vol-role { display: flex; gap: 14px; align-items: flex-start; padding: 20px; border: 1px solid rgba(255,255,255,0.07); transition: border-color 0.3s, background 0.3s; }
+.vol-role:hover { border-color: var(--lime); background: rgba(182,255,0,0.03); }
+.vol-role-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+.vol-role-title { font-weight: 700; font-size: 14px; color: var(--white); margin-bottom: 4px; }
+.vol-role-desc { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+.vol-perks { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 32px; }
+.vol-perks-title { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px; }
+.vol-perks-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.vol-perk { font-size: 12px; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04); padding: 10px 12px; border: 1px solid rgba(255,255,255,0.06); }
+.vol-form-wrap {}
+@media (max-width: 1024px) { .vol-wrapper { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .volunteer-section { padding: 64px 20px; } .vol-roles { grid-template-columns: 1fr; } .vol-perks-grid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -683,7 +701,9 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
     <li><a href="#tournament">Tournaments</a></li>
     <li><a href="#format">Format</a></li>
     <li><a href="#dashboard">Dashboard</a></li>
-    <li><a href="#about">About</a></li>
+    <li><a href="#volunteer">Volunteer</a></li>
+    <li><a href="#volunteer">Volunteer</a></li>
+        <li><a href="#about">About</a></li>
   </ul>
   <a href="#register" class="nav-cta">Register Now</a>
   <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -698,6 +718,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   <a href="#format" onclick="closeMobile()">Format</a>
   <a href="#dashboard" onclick="closeMobile()">Dashboard</a>
   <a href="#register" onclick="closeMobile()">Register</a>
+  <a href="#volunteer" onclick="closeMobile()">Volunteer</a>
   <a href="#about" onclick="closeMobile()">About</a>
 </div>
 
@@ -709,15 +730,15 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
     <div class="hero-ticker-inner" id="tickerInner">
       <span class="highlight">● REGISTRATIONS OPEN</span>
       <span>PLAYRYZE BENGALURU CUP 2025</span>
-      <span class="highlight">₹50,000 PRIZE POOL</span>
+      <span class="highlight">₹20,000 PRIZE POOL</span>
       <span>MAY 24 · KORAMANGALA</span>
-      <span class="highlight">ONLY 4 SLOTS LEFT</span>
+      <span class="highlight">ONLY 5 SLOTS LEFT</span>
       <span>5V5 TURF FOOTBALL</span>
       <span class="highlight">● REGISTRATIONS OPEN</span>
       <span>PLAYRYZE BENGALURU CUP 2025</span>
-      <span class="highlight">₹50,000 PRIZE POOL</span>
+      <span class="highlight">₹20,000 PRIZE POOL</span>
       <span>MAY 24 · KORAMANGALA</span>
-      <span class="highlight">ONLY 4 SLOTS LEFT</span>
+      <span class="highlight">ONLY 5 SLOTS LEFT</span>
       <span>5V5 TURF FOOTBALL</span>
     </div>
   </div>
@@ -743,11 +764,11 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
 
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="hero-stat-num">24+</div>
+      <div class="hero-stat-num">25</div>
       <div class="hero-stat-label">Teams</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num">₹50K</div>
+      <div class="hero-stat-num">₹20K</div>
       <div class="hero-stat-label">Prize Pool</div>
     </div>
     <div class="hero-stat">
@@ -780,11 +801,11 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         </div>
         <div class="t-detail">
           <div class="t-detail-label">🏆 Prize Pool</div>
-          <div class="t-detail-val lime">₹50,000</div>
+          <div class="t-detail-val lime">₹20,000</div>
         </div>
         <div class="t-detail">
           <div class="t-detail-label">🎟 Entry Fee</div>
-          <div class="t-detail-val">₹2,500</div>
+          <div class="t-detail-val">₹2,899</div>
         </div>
         <div class="t-detail">
           <div class="t-detail-label">👥 Format</div>
@@ -821,7 +842,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         <div class="slots-bar">
           <div class="slots-label">
             <span>Slots Available</span>
-            <span id="slots-text">4 of 16 left</span>
+            <span id="slots-text">5 of 25 left</span>
           </div>
           <div class="slots-track"><div class="slots-fill" style="width:75%"></div></div>
         </div>
@@ -848,7 +869,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
       <div class="why-num">02</div>
       <div class="why-icon">💰</div>
       <div class="why-card-title">Cash Prizes</div>
-      <div class="why-card-desc">₹50,000 prize pool with cash rewards across multiple positions. Compete for what matters.</div>
+      <div class="why-card-desc">₹20,000 prize pool with cash rewards across multiple positions. Compete for what matters.</div>
     </div>
     <div class="why-card reveal reveal-delay-2">
       <div class="why-num">03</div>
@@ -944,29 +965,29 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
       <div class="format-step">
         <div class="step-num">01</div>
         <div class="step-content">
-          <div class="step-title">Register Your Team</div>
-          <div class="step-desc">Fill in your team details, pay the entry fee of ₹2,500, and upload your payment screenshot to confirm your slot.</div>
+          <div class="step-title">Round 1 — Group Stage</div>
+          <div class="step-desc">25 teams split into 5 groups of 5. Full round-robin within each group — every team plays 4 matches. Top 2 teams from each group advance. 7-minute halves.</div>
         </div>
       </div>
       <div class="format-step">
         <div class="step-num">02</div>
         <div class="step-content">
-          <div class="step-title">Group Stage</div>
-          <div class="step-desc">16 teams divided into 4 groups. Round-robin format within groups. Top 2 teams from each group advance. 7-minute halves.</div>
+          <div class="step-title">Round 2 — Super Groups</div>
+          <div class="step-desc">10 qualifiers re-seeded into 2 groups of 5. Round-robin again — every team plays 4 more matches. Top 2 from each super group advance to semis.</div>
         </div>
       </div>
       <div class="format-step">
         <div class="step-num">03</div>
         <div class="step-content">
-          <div class="step-title">Knockout Rounds</div>
-          <div class="step-desc">Quarter-finals, Semi-finals, and Finals. Single elimination. 10-minute halves with penalty shootouts for drawn matches.</div>
+          <div class="step-title">Round 3 — Semi Finals</div>
+          <div class="step-desc">Group A winner vs Group B runner-up. Group B winner vs Group A runner-up. 10-minute halves. Penalty shootout if level after full time.</div>
         </div>
       </div>
       <div class="format-step">
         <div class="step-num">04</div>
         <div class="step-content">
-          <div class="step-title">Prize Ceremony</div>
-          <div class="step-desc">Winners, runners-up, and 3rd place receive cash prizes + trophies. Individual awards for Best Player, Top Scorer, Best GK.</div>
+          <div class="step-title">Round 4 — The Final</div>
+          <div class="step-desc">The two semi-final winners battle for the championship. 15-minute halves + extra time + penalties if needed. Trophy ceremony + prize distribution on court.</div>
         </div>
       </div>
     </div>
@@ -974,11 +995,15 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
       <div class="rules-title">MATCH RULES</div>
       <div class="rule-item">
         <div class="rule-bullet">✓</div>
-        <div class="rule-text"><span class="rule-label">Team Size</span>5 players on field + 3 substitutes (rolling subs)</div>
+        <div class="rule-text"><span class="rule-label">Teams & Format</span>25 teams · 5 groups · 4 rounds · 1 champion</div>
       </div>
       <div class="rule-item">
         <div class="rule-bullet">✓</div>
-        <div class="rule-text"><span class="rule-label">Eligibility</span>Ages 18–25 years. Valid student/age ID required.</div>
+        <div class="rule-text"><span class="rule-label">Team Size</span>5 players on field + up to 3 substitutes (rolling subs allowed)</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-bullet">✓</div>
+        <div class="rule-text"><span class="rule-label">Eligibility</span>Ages 18–25 years. Valid student/age ID mandatory at check-in.</div>
       </div>
       <div class="rule-item">
         <div class="rule-bullet">✓</div>
@@ -990,11 +1015,11 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
       </div>
       <div class="rule-item">
         <div class="rule-bullet">✓</div>
-        <div class="rule-text"><span class="rule-label">Fair Play</span>Yellow/Red card system applies. 2 yellows = red. Sent-off players banned next match.</div>
+        <div class="rule-text"><span class="rule-label">Fair Play</span>Yellow/Red card system. 2 yellows = red. Red card = banned next match.</div>
       </div>
       <div class="rule-item">
         <div class="rule-bullet">✓</div>
-        <div class="rule-text"><span class="rule-label">Scoring</span>3 pts win, 1 pt draw, 0 pt loss. Goal difference as tiebreaker.</div>
+        <div class="rule-text"><span class="rule-label">Scoring</span>3 pts win · 1 pt draw · 0 pt loss. Goal difference as tiebreaker, then head-to-head.</div>
       </div>
       <a href="#dashboard" class="btn-primary" style="margin-top:28px;width:100%;text-align:center;justify-content:center;">Download Full Rulebook →</a>
     </div>
@@ -1078,7 +1103,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
     <div class="register-info reveal">
       <div class="section-tag">Registration</div>
       <h2 class="section-headline">SECURE<br>YOUR SLOT</h2>
-      <p style="font-size:15px;color:var(--gray);line-height:1.8;margin:24px 0 0;">Only 4 slots remaining for PlayRyze Bengaluru Cup 2025. Complete the form below and make your payment to confirm your team's spot.</p>
+      <p style="font-size:15px;color:var(--gray);line-height:1.8;margin:24px 0 0;">Only 5 slots remaining for PlayRyze Bengaluru Cup 2025. Complete the form below and make your payment to confirm your team's spot.</p>
       <div class="register-steps">
         <div class="reg-step">
           <div class="reg-step-num">1</div>
@@ -1090,7 +1115,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         </div>
         <div class="reg-step">
           <div class="reg-step-num">3</div>
-          <div class="reg-step-text"><strong>Make Payment</strong> — ₹2,500 via UPI/Bank transfer</div>
+          <div class="reg-step-text"><strong>Make Payment</strong> — ₹2,899 via UPI/Bank transfer</div>
         </div>
         <div class="reg-step">
           <div class="reg-step-num">4</div>
@@ -1171,7 +1196,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         <div class="form-title">PAYMENT</div>
         <div class="qr-box">
           <div class="qr-placeholder">📱</div>
-          <div class="qr-amount">₹2,500</div>
+          <div class="qr-amount">₹2,899</div>
           <div class="qr-label" style="margin-top:4px;">UPI · Bank Transfer</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:12px;font-family:'Space Mono',monospace;">UPI: playryze@upi<br>Account details will be emailed on registration</div>
         </div>
@@ -1238,13 +1263,14 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         <tr><th>Match</th><th>Teams</th><th>Date & Time</th><th>Venue</th><th>Status</th></tr>
       </thead>
       <tbody>
-        <tr><td>QF1</td><td class="match-teams">FC Indiranagar <span class="match-vs">vs</span> HSR Ballers</td><td>May 24 · 9:00 AM</td><td>Pitch A</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
-        <tr><td>QF2</td><td class="match-teams">Whitefield United <span class="match-vs">vs</span> JP Nagar FC</td><td>May 24 · 9:30 AM</td><td>Pitch B</td><td><span class="badge badge-live">🔴 Live</span></td></tr>
-        <tr><td>QF3</td><td class="match-teams">BTM Strikers <span class="match-vs">vs</span> Marathahalli XI</td><td>May 24 · 10:00 AM</td><td>Pitch A</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
-        <tr><td>QF4</td><td class="match-teams">Koramangala FC <span class="match-vs">vs</span> Yelahanka Boys</td><td>May 24 · 10:30 AM</td><td>Pitch B</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
-        <tr><td>SF1</td><td class="match-teams">Winner QF1 <span class="match-vs">vs</span> Winner QF2</td><td>May 24 · 2:00 PM</td><td>Main Pitch</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
-        <tr><td>SF2</td><td class="match-teams">Winner QF3 <span class="match-vs">vs</span> Winner QF4</td><td>May 24 · 3:00 PM</td><td>Main Pitch</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
-        <tr><td>Final</td><td class="match-teams">Winner SF1 <span class="match-vs">vs</span> Winner SF2</td><td>May 25 · 5:00 PM</td><td>Main Pitch</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
+        <tr><td style="font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1px;">R1·G1</td><td class="match-teams">FC Indiranagar <span class="match-vs">vs</span> HSR Ballers</td><td>May 24 · 8:00 AM</td><td>Pitch A</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
+        <tr><td style="font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1px;">R1·G1</td><td class="match-teams">Whitefield Utd <span class="match-vs">vs</span> JP Nagar FC</td><td>May 24 · 8:30 AM</td><td>Pitch B</td><td><span class="badge badge-live">🔴 Live</span></td></tr>
+        <tr><td style="font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1px;">R1·G2</td><td class="match-teams">BTM Strikers <span class="match-vs">vs</span> Marathahalli XI</td><td>May 24 · 9:00 AM</td><td>Pitch A</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
+        <tr><td style="font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1px;">R1·G3</td><td class="match-teams">Koramangala FC <span class="match-vs">vs</span> Yelahanka Boys</td><td>May 24 · 9:30 AM</td><td>Pitch B</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
+        <tr><td style="font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1px;">R2·SG1</td><td class="match-teams">Top 2 Group A <span class="match-vs">vs</span> Top 2 Group B</td><td>May 24 · 2:00 PM</td><td>Main Pitch</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
+        <tr><td style="font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1px;">SF1</td><td class="match-teams">SG1 Winner <span class="match-vs">vs</span> SG2 Runner-up</td><td>May 25 · 2:00 PM</td><td>Main Pitch</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
+        <tr><td style="font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1px;">SF2</td><td class="match-teams">SG2 Winner <span class="match-vs">vs</span> SG1 Runner-up</td><td>May 25 · 3:00 PM</td><td>Main Pitch</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
+        <tr><td style="font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1px;">FINAL</td><td class="match-teams">SF1 Winner <span class="match-vs">vs</span> SF2 Winner</td><td>May 25 · 5:00 PM</td><td>Main Pitch</td><td><span class="badge badge-upcoming">Upcoming</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -1334,6 +1360,143 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
 
 <div class="divider"></div>
 
+
+<div class="divider"></div>
+
+<!-- VOLUNTEER -->
+<section class="volunteer-section" id="volunteer">
+  <div class="vol-wrapper">
+    <div class="vol-left reveal">
+      <div class="section-tag" style="color:rgba(255,255,255,0.3)">Join The Team</div>
+      <h2 class="section-headline" style="color:var(--white)">VOLUNTEER<br>WITH <span style="color:var(--lime)">PLAYRYZE</span></h2>
+      <p class="vol-desc">Be part of Bengaluru's most exciting youth sports event — from the inside. We're looking for passionate people to help run the tournament, capture the moments, and build the community.</p>
+      <div class="vol-roles">
+        <div class="vol-role reveal reveal-delay-1">
+          <div class="vol-role-icon">🎙️</div>
+          <div>
+            <div class="vol-role-title">Event Coordinator</div>
+            <div class="vol-role-desc">Manage match scheduling, team check-ins, and on-ground logistics.</div>
+          </div>
+        </div>
+        <div class="vol-role reveal reveal-delay-2">
+          <div class="vol-role-icon">📸</div>
+          <div>
+            <div class="vol-role-title">Media & Content</div>
+            <div class="vol-role-desc">Photograph matches, shoot reels, post live updates on social media.</div>
+          </div>
+        </div>
+        <div class="vol-role reveal reveal-delay-3">
+          <div class="vol-role-icon">🏟️</div>
+          <div>
+            <div class="vol-role-title">Ground Operations</div>
+            <div class="vol-role-desc">Set up the turf, manage equipment, assist referees and teams.</div>
+          </div>
+        </div>
+        <div class="vol-role reveal reveal-delay-1">
+          <div class="vol-role-icon">📊</div>
+          <div>
+            <div class="vol-role-title">Scoreboard & Stats</div>
+            <div class="vol-role-desc">Update live scores, maintain match records, manage the dashboard.</div>
+          </div>
+        </div>
+        <div class="vol-role reveal reveal-delay-2">
+          <div class="vol-role-icon">🤝</div>
+          <div>
+            <div class="vol-role-title">Team Liaison</div>
+            <div class="vol-role-desc">Be the point of contact for registered teams. Handle queries and communication.</div>
+          </div>
+        </div>
+        <div class="vol-role reveal reveal-delay-3">
+          <div class="vol-role-icon">🎨</div>
+          <div>
+            <div class="vol-role-title">Design & Branding</div>
+            <div class="vol-role-desc">Create match cards, stories, and visual assets for PlayRyze's social presence.</div>
+          </div>
+        </div>
+      </div>
+      <div class="vol-perks">
+        <div class="vol-perks-title">WHAT YOU GET</div>
+        <div class="vol-perks-grid">
+          <div class="vol-perk">🎽 PlayRyze Volunteer Kit</div>
+          <div class="vol-perk">📜 Official Certificate</div>
+          <div class="vol-perk">🍕 Meals on event days</div>
+          <div class="vol-perk">🚀 Real event experience</div>
+          <div class="vol-perk">📱 Social media feature</div>
+          <div class="vol-perk">🌐 Network with athletes</div>
+        </div>
+      </div>
+    </div>
+    <div class="vol-form-wrap reveal reveal-delay-2">
+      <div class="form-card" style="clip-path:polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));">
+        <div class="form-title">APPLY TO VOLUNTEER</div>
+        <div id="volForm">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" class="form-input" placeholder="Your name">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Phone *</label>
+              <input type="tel" class="form-input" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Age *</label>
+              <input type="number" class="form-input" placeholder="e.g. 20">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-input" placeholder="you@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">College / Institution *</label>
+            <input type="text" class="form-input" placeholder="e.g. Christ University">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Preferred Role *</label>
+            <select class="form-input form-select">
+              <option value="">Select a role</option>
+              <option>Event Coordinator</option>
+              <option>Media & Content</option>
+              <option>Ground Operations</option>
+              <option>Scoreboard & Stats</option>
+              <option>Team Liaison</option>
+              <option>Design & Branding</option>
+              <option>Open to anything</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Why do you want to volunteer?</label>
+            <textarea class="form-input" rows="3" placeholder="Tell us in 2-3 sentences..." style="resize:none;font-family:'DM Sans',sans-serif;"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Available on May 24–25?</label>
+            <select class="form-input form-select">
+              <option value="">Select availability</option>
+              <option>Both days (May 24 & 25)</option>
+              <option>May 24 only</option>
+              <option>May 25 only</option>
+            </select>
+          </div>
+          <button class="btn-form-next" style="width:100%;margin-top:8px;" onclick="submitVolunteer()">Submit Application →</button>
+        </div>
+        <div id="volSuccess" style="display:none;">
+          <div class="success-state">
+            <div class="success-icon">🙌</div>
+            <div class="success-title">APPLICATION SENT!</div>
+            <div class="success-desc">Welcome to the PlayRyze crew. We'll reach out on WhatsApp/email within 3 days with your role confirmation and onboarding details.</div>
+            <div style="margin-top:24px;padding:16px;background:rgba(182,255,0,0.05);border:1px solid rgba(182,255,0,0.2);font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;">
+              📅 Event: May 24–25, 2026<br>
+              📍 Koramangala Turf, Bengaluru<br>
+              📱 We'll add you to the volunteer WhatsApp group
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ABOUT -->
 <section class="about-section" id="about">
   <div class="about-wrapper">
@@ -1387,6 +1550,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         <li><a href="#format">Format & Rules</a></li>
         <li><a href="#register">Register</a></li>
         <li><a href="#dashboard">Live Dashboard</a></li>
+        <li><a href="#volunteer">Volunteer</a></li>
         <li><a href="#about">About</a></li>
       </ul>
     </div>
@@ -1515,6 +1679,11 @@ const slotObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { slotBar.style.width = '75%'; } });
 }, { threshold: 0.5 });
 if (slotBar) slotObserver.observe(slotBar);
+
+function submitVolunteer() {
+  document.getElementById('volForm').style.display = 'none';
+  document.getElementById('volSuccess').style.display = 'block';
+}
 </script>
 </body>
 </html>
