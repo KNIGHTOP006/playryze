@@ -6,7 +6,7 @@ const DRIVE_FOLDER_ID = 'OPTIONAL_DRIVE_FOLDER_ID';
 function doPost(e) {
   try {
     const payload = JSON.parse(e.postData.contents || '{}');
-    const submissionType = payload.type || 'registration';
+    const submissionType = inferSubmissionType_(payload);
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 
     if (submissionType === 'volunteer') {
@@ -99,6 +99,18 @@ function doPost(e) {
 
 function doGet() {
   return jsonResponse_({ ok: true, message: 'Registration webhook is live.' });
+}
+
+function inferSubmissionType_(payload) {
+  if (payload.type) {
+    return payload.type;
+  }
+
+  if (payload.fullName || payload.preferredRole || payload.availability) {
+    return 'volunteer';
+  }
+
+  return 'registration';
 }
 
 function validateRegistrationPayload_(payload) {
