@@ -1,8 +1,8 @@
 const REGISTRATION_SHEET_NAME = 'Registrations';
 const VOLUNTEER_SHEET_NAME = 'Volunteers';
-const SPREADSHEET_ID = 'PASTE_YOUR_GOOGLE_SHEET_ID_HERE';
-const OWNER_EMAIL = 'your@email.com';
-const DRIVE_FOLDER_ID = 'OPTIONAL_DRIVE_FOLDER_ID';
+const SPREADSHEET_ID = '1bN_csCUQdPTpyXf1znjtxK-VfYe1pjRD_OfNUr71WVI';
+const OWNER_EMAIL = 'gripsmartx4@gmail.com';
+const DRIVE_FOLDER_ID = '1CMcseZKlsDI0vvBSYOqXLobWPw2wV_sT';
 
 function doPost(e) {  
   try {
@@ -223,6 +223,9 @@ function sendRegistrationConfirmationEmail_(payload) {
     'Team Size: ' + payload.teamSize,
     'Transaction ID: ' + (payload.transactionId || 'Pending'),
     '',
+    '📱 Join our official WhatsApp group for match schedules, updates, and announcements:',
+    'https://chat.whatsapp.com/EVUbFmVEDIM9jmK1ifx0KK',
+    '',
     'We will contact you at this email address with the next steps.',
     '',
     'Team PlayRyze'
@@ -261,6 +264,9 @@ function sendVolunteerConfirmationEmail_(payload) {
     'Preferred Role: ' + payload.preferredRole,
     'Availability: ' + payload.availability,
     'College: ' + payload.collegeName,
+    '',
+    '📱 Join our official WhatsApp group for event updates and volunteer briefings:',
+    'https://chat.whatsapp.com/EVUbFmVEDIM9jmK1ifx0KK',
     '',
     'Team PlayRyze'
   ].join('\n');
