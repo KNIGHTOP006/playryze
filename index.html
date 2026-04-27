@@ -1303,7 +1303,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
           <div class="success-desc">Your registration is received. We'll send a confirmation to your email within 24 hours. Welcome to PlayRyze — go rise.</div>
           <div style="margin-top:28px;padding:20px;background:rgba(182,255,0,0.05);border:1px solid rgba(182,255,0,0.2);">
             <div style="font-size:11px;color:var(--lime);font-family:'Space Mono',monospace;letter-spacing:2px;text-transform:uppercase;">What's next?</div>
-            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px;line-height:1.7;">📧 Check your email for confirmation<br>📱 Join our WhatsApp group for updates<br>📅 May 24–25 · Koramangala Turf</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px;line-height:1.7;">📧 Check your email for confirmation<br>📱 Join our WhatsApp group for updates<br>📅 May 24 · Nature Kicks Kanakpura Rd</div>
           </div>
         </div>
       </div>
@@ -1920,20 +1920,24 @@ function switchGroup(group, btn) {
 
 async function loadFixtures() {
   try {
-    const res = await fetch(REGISTRATION_WEBHOOK_URL, {
+    const res = await fetch(REGISTRATION_WEBHOOK_URL + '?t=' + Date.now(), {
       method: 'POST',
+      cache: 'no-store',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8'
       },
-      body: JSON.stringify({ action: 'fixtures' })
+      body: JSON.stringify({ action: 'fixtures', ts: Date.now() })
     });
     const json = await res.json();
-    if (json.ok && json.fixtures && json.fixtures.length > 0) {
+    if (json.ok && Array.isArray(json.fixtures)) {
       fixturesData = json.fixtures;
       const lu = document.getElementById('lastUpdated');
-      if (lu) lu.textContent = 'Last updated: ' + new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
-    } else { fixturesData = null; }
-  } catch(e) { fixturesData = null; }
+      if (lu) {
+        const stamp = json.updatedAt ? new Date(json.updatedAt) : new Date();
+        lu.textContent = 'Last updated: ' + stamp.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit', second:'2-digit'});
+      }
+    }
+  } catch(e) {}
   renderAllPanels();
 }
 
@@ -2011,7 +2015,13 @@ function renderAllPanels() {
 }
 
 loadFixtures();
-setInterval(loadFixtures, 60000);
+setInterval(loadFixtures, 15000);
+window.addEventListener('focus', loadFixtures);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    loadFixtures();
+  }
+});
 
 // TICKER DUPLICATE
 const ticker = document.getElementById('tickerInner');

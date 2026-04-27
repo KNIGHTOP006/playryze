@@ -133,24 +133,49 @@ function getFixturesResponse_() {
       .map(row => {
         const obj = {};
         headers.forEach((h, i) => { obj[h] = String(row[i] || '').trim(); });
+        const round = normalizeRound_(obj['round']);
+        const group = String(obj['group'] || '').trim().toUpperCase();
+        const status = normalizeStatus_(obj['status']);
         return {
-          matchNo: obj['match_no'] || '',
-          round: obj['round'] || 'Group Stage',
-          group: obj['group'] || '',
+          matchNo: obj['match_no'] || obj['match'] || '',
+          round: round,
+          group: group,
           teamA: obj['team_a'] || '',
           teamB: obj['team_b'] || '',
           scoreA: obj['score_a'] || '',
           scoreB: obj['score_b'] || '',
           time: obj['time'] || 'TBD',
           pitch: obj['pitch'] || 'TBD',
-          status: obj['status'] || 'Upcoming'
+          status: status
         };
       });
 
-    return jsonResponse_({ ok: true, fixtures: fixtures });
+    return jsonResponse_({ ok: true, fixtures: fixtures, updatedAt: new Date().toISOString() });
   } catch (err) {
-    return jsonResponse_({ ok: false, error: err.message, fixtures: [] });
+    return jsonResponse_({ ok: false, error: err.message, fixtures: [], updatedAt: new Date().toISOString() });
   }
+}
+
+function normalizeRound_(value) {
+  const round = String(value || '').trim().toLowerCase();
+
+  if (!round) return 'Group Stage';
+  if (round === 'group' || round === 'group stage' || round === 'groups') return 'Group Stage';
+  if (round === 'round 2' || round === 'round2' || round === 'round two') return 'Round 2';
+  if (round === 'semi' || round === 'semi final' || round === 'semi finals' || round === 'semifinal' || round === 'semifinals') return 'Semi Final';
+  if (round === 'final' || round === 'finals') return 'Final';
+
+  return String(value).trim();
+}
+
+function normalizeStatus_(value) {
+  const status = String(value || '').trim().toLowerCase();
+
+  if (!status) return 'Upcoming';
+  if (status === 'live' || status === 'ongoing' || status === 'in progress') return 'Live';
+  if (status === 'done' || status === 'completed' || status === 'complete' || status === 'finished') return 'Done';
+
+  return 'Upcoming';
 }
 
 function getSpreadsheet_() {
