@@ -2003,8 +2003,13 @@ function formatMatchTime(value) {
 function renderFixturesTable(fixtures) {
   if (!fixtures.length) return '<div class="dash-error">No fixtures yet.</div>';
   const rows = fixtures.map(f => {
-    const score = f.status==='Done' ? `<strong>${f.scoreA}–${f.scoreB}</strong>` : f.status==='Live' ? `<strong style="color:var(--lime)">${f.scoreA||'?'}–${f.scoreB||'?'}</strong>` : '–';
-    return `<tr><td style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gray)">#${f.matchNo}</td><td class="match-teams">${f.teamA} <span class="match-vs">vs</span> ${f.teamB}</td><td>${score}</td><td style="font-size:12px;color:var(--gray)">${formatMatchTime(f.time)}</td><td style="font-size:12px;color:var(--gray)">${f.pitch||'TBD'}</td><td>${statusBadge(f.status)}</td></tr>`;
+    const hasScore = f.scoreA !== '' && f.scoreB !== '';
+    const score = f.status==='Live'
+      ? `<strong style="color:var(--lime)">${f.scoreA||'?'}–${f.scoreB||'?'}</strong>`
+      : hasScore
+        ? `<strong style="color:var(--black)">${f.scoreA}–${f.scoreB}</strong>`
+        : '–';
+    return `<tr><td style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gray)">#${f.matchNo}</td><td class="match-teams">${f.teamA} <span class="match-vs" style="color:var(--black)">vs</span> ${f.teamB}</td><td>${score}</td><td style="font-size:12px;color:var(--gray)">${formatMatchTime(f.time)}</td><td style="font-size:12px;color:var(--gray)">${f.pitch||'TBD'}</td><td>${statusBadge(f.status)}</td></tr>`;
   }).join('');
   return `<div class="table-scroll"><table class="fixtures-table"><thead><tr><th>#</th><th>Teams</th><th>Score</th><th>Time</th><th>Pitch</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
