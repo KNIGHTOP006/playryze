@@ -1253,10 +1253,17 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
       <div class="form-step" id="step3">
         <div class="form-title">PAYMENT</div>
         <div class="qr-box">
-          <div class="qr-placeholder">📱</div>
-          <div class="qr-amount">₹899 , 2K to be paid during check-in</div>
+        <div class="qr-placeholder">
+        <img src="qr-code.png" alt="QR Code">
+        </div>
+            <div class="qr-amount">₹899 , 2K to be paid during check-in</div>
           <div class="qr-label" style="margin-top:4px;">UPI · Bank Transfer</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:12px;font-family:'Space Mono',monospace;">UPI: playryze@upi<br>Account details will be emailed on registration</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:12px;font-family:'Space Mono',monospace;">
+            UPI: <span id="upiIdText">harshith.reddyy06@oksbi</span>
+            <button type="button" onclick="copyUpiId()" style="margin-left:10px;padding:6px 10px;border:1px solid rgba(182,255,0,0.35);background:rgba(182,255,0,0.08);color:var(--lime);font-size:11px;font-family:'Space Mono',monospace;cursor:pointer;">Copy</button>
+            <div id="upiCopyStatus" style="display:none;margin-top:8px;color:var(--lime);">UPI ID copied</div>
+            <br>Account details will be emailed on registration
+          </div>
         </div>
         <div class="form-btns" style="margin-top: 20px;">
           <button class="btn-form-prev" onclick="prevStep(3)">← Back</button>
@@ -2089,6 +2096,39 @@ function sendFooterMessage() {
 const footerContactButton = document.querySelector('.contact-form .contact-submit');
 if (footerContactButton) {
   footerContactButton.addEventListener('click', sendFooterMessage);
+}
+
+async function copyUpiId() {
+  const upiId = 'harshith.reddyy06@oksbi';
+  const status = document.getElementById('upiCopyStatus');
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(upiId);
+    } else {
+      const tempInput = document.createElement('input');
+      tempInput.value = upiId;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      tempInput.remove();
+    }
+
+    if (status) {
+      status.style.display = 'block';
+      status.style.color = 'var(--lime)';
+      status.textContent = 'UPI ID copied';
+      setTimeout(() => {
+        status.style.display = 'none';
+      }, 2000);
+    }
+  } catch (error) {
+    if (status) {
+      status.style.display = 'block';
+      status.style.color = '#ff8a8a';
+      status.textContent = 'Could not copy UPI ID';
+    }
+  }
 }
 </script>
 </body>
