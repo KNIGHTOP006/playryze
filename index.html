@@ -33,6 +33,9 @@ body {
   overflow-x: hidden;
   cursor: auto;
 }
+html {
+  overflow-x: hidden;
+}
 
 /* CUSTOM CURSOR */
 .cursor-dot {
@@ -564,6 +567,14 @@ section { padding: 120px 48px; }
 .group-block-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
 .group-block-title span { display: inline-block; background: var(--lime); color: var(--black); padding: 2px 10px; font-size: 14px; }
 .group-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+.group-columns > div,
+.dash-panel,
+#groupContent,
+#round2Content,
+#semisContent,
+#finalContent {
+  min-width: 0;
+}
 .dash-loading { text-align: center; padding: 48px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--gray); letter-spacing: 2px; }
 .dash-loading::after { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--lime); border-radius: 50%; margin-left: 8px; animation: pulse-dot 1s ease infinite; }
 .dash-error { text-align: center; padding: 32px; font-size: 13px; color: var(--gray); border: 1px dashed var(--mid-gray); }
@@ -571,6 +582,14 @@ section { padding: 120px 48px; }
 .last-updated::before { content: ''; width: 6px; height: 6px; background: var(--lime); border-radius: 50%; animation: pulse-dot 2s ease infinite; }
 @media (max-width: 768px) { .group-columns { grid-template-columns: 1fr; gap: 16px; } .group-tab { padding: 10px 14px; font-size: 11px; } }
 
+.table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
 .fixtures-table { width: 100%; border-collapse: collapse; }
 .fixtures-table th { text-align: left; padding: 12px 16px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-family: 'Space Mono', monospace; color: var(--gray); border-bottom: 2px solid var(--mid-gray); }
 .fixtures-table td { padding: 16px 16px; font-size: 14px; border-bottom: 1px solid var(--mid-gray); }
@@ -742,6 +761,14 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
   .divider { margin: 0 20px; }
   .dash-tabs { overflow-x: auto; }
+  .dashboard-section { padding-left: 20px; padding-right: 20px; }
+  .table-scroll { margin: 0 -2px; }
+  .fixtures-table,
+  .standings-table { min-width: 640px; }
+  .fixtures-table th,
+  .fixtures-table td,
+  .standings-table th,
+  .standings-table td { padding-left: 12px; padding-right: 12px; }
 }
 
 /* VOLUNTEER SECTION */
