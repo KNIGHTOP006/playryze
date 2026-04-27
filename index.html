@@ -1950,8 +1950,11 @@ function getStandings(fixtures) {
   const teams = {};
   fixtures.forEach(f => {
     [f.teamA, f.teamB].forEach(t => { if (!teams[t]) teams[t] = {name:t,p:0,w:0,d:0,l:0,gf:0,ga:0}; });
-    if (f.status === 'Done' && f.scoreA !== '' && f.scoreB !== '') {
-      const a = parseInt(f.scoreA), b = parseInt(f.scoreB);
+    const hasScore = f.scoreA !== '' && f.scoreB !== '';
+    const a = Number(f.scoreA);
+    const b = Number(f.scoreB);
+    const isCompleted = f.status === 'Done' || f.status === 'Live' || (hasScore && !Number.isNaN(a) && !Number.isNaN(b));
+    if (isCompleted && !Number.isNaN(a) && !Number.isNaN(b)) {
       teams[f.teamA].p++; teams[f.teamB].p++;
       teams[f.teamA].gf += a; teams[f.teamA].ga += b;
       teams[f.teamB].gf += b; teams[f.teamB].ga += a;
