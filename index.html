@@ -30,7 +30,7 @@ body {
   background: var(--white);
   color: var(--black);
   overflow-x: hidden;
-  cursor: none;
+  cursor: auto;
 }
 
 /* CUSTOM CURSOR */
@@ -40,8 +40,8 @@ body {
   border-radius: 50%;
   position: fixed; top: 0; left: 0;
   pointer-events: none; z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: transform 0.1s ease;
+  transform: translate3d(-50%, -50%, 0);
+  opacity: 0;
 }
 .cursor-ring {
   width: 36px; height: 36px;
@@ -49,14 +49,70 @@ body {
   border-radius: 50%;
   position: fixed; top: 0; left: 0;
   pointer-events: none; z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: all 0.2s ease;
+  transform: translate3d(-50%, -50%, 0);
+  transition: width 0.14s ease, height 0.14s ease, background 0.14s ease, border-color 0.14s ease, opacity 0.14s ease;
+  opacity: 0;
+}
+body.cursor-ready .cursor-dot,
+body.cursor-ready .cursor-ring {
+  opacity: 1;
 }
 body:has(a:hover) .cursor-ring,
 body:has(button:hover) .cursor-ring {
   width: 52px; height: 52px;
   background: rgba(182, 255, 0, 0.15);
   border-color: var(--lime);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body,
+  a,
+  button,
+  .nav-cta,
+  .hamburger,
+  .mobile-menu-close,
+  .btn-primary,
+  .btn-outline,
+  .gallery-item,
+  .form-select,
+  .btn-form-next,
+  .btn-form-prev,
+  .upload-zone,
+  .dash-tab,
+  .group-tab,
+  .download-btn,
+  .social-btn,
+  .contact-submit {
+    cursor: none;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  body,
+  a,
+  button,
+  .nav-cta,
+  .hamburger,
+  .mobile-menu-close,
+  .btn-primary,
+  .btn-outline,
+  .gallery-item,
+  .form-select,
+  .btn-form-next,
+  .btn-form-prev,
+  .upload-zone,
+  .dash-tab,
+  .group-tab,
+  .download-btn,
+  .social-btn,
+  .contact-submit {
+    cursor: auto;
+  }
+
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
 }
 
 /* NAV */
@@ -1498,10 +1554,54 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
 // CURSOR
 const dot = document.getElementById('cursorDot');
 const ring = document.getElementById('cursorRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx + 'px'; dot.style.top = my + 'px'; });
-function animRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); }
-animRing();
+const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+if (hasFinePointer) {
+  let mx = window.innerWidth / 2;
+  let my = window.innerHeight / 2;
+  let rx = mx;
+  let ry = my;
+  let rafId = null;
+
+  const renderCursor = () => {
+    rx += (mx - rx) * 0.28;
+    ry += (my - ry) * 0.28;
+
+    dot.style.left = mx + 'px';
+    dot.style.top = my + 'px';
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+
+    if (Math.abs(mx - rx) > 0.1 || Math.abs(my - ry) > 0.1) {
+      rafId = requestAnimationFrame(renderCursor);
+    } else {
+      rx = mx;
+      ry = my;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      rafId = null;
+    }
+  };
+
+  document.addEventListener('pointermove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    document.body.classList.add('cursor-ready');
+    if (!rafId) {
+      rafId = requestAnimationFrame(renderCursor);
+    }
+  });
+
+  window.addEventListener('mouseout', e => {
+    if (!e.relatedTarget) {
+      document.body.classList.remove('cursor-ready');
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    document.body.classList.remove('cursor-ready');
+  });
+}
 
 // NAV SCROLL
 const nav = document.getElementById('mainNav');
