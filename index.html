@@ -32,6 +32,10 @@ body {
   overflow-x: hidden;
   cursor: none;
 }
+@media (hover: none) and (pointer: coarse) {
+  body { cursor: auto; }
+  .cursor-dot, .cursor-ring { display: none !important; }
+}
 
 /* CUSTOM CURSOR */
 .cursor-dot {
@@ -94,6 +98,8 @@ nav.scrolled {
   text-decoration: none; display: inline-block;
   transition: background 0.2s, color 0.2s;
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .nav-cta:hover { background: var(--lime); color: var(--black); }
 
@@ -201,6 +207,8 @@ nav.scrolled {
   display: inline-flex; align-items: center; gap: 10px;
   transition: all 0.2s;
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .btn-primary:hover { background: var(--white); transform: translateY(-2px); }
 .btn-outline {
@@ -211,6 +219,8 @@ nav.scrolled {
   display: inline-flex; align-items: center; gap: 10px;
   transition: all 0.2s;
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .btn-outline:hover { border-color: var(--lime); color: var(--lime); transform: translateY(-2px); }
 
@@ -475,7 +485,7 @@ section { padding: 120px 48px; }
 /* DASHBOARD */
 .dashboard-section { background: var(--light-gray); padding: 120px 48px; }
 .dash-tabs { display: flex; gap: 0; margin: 48px 0 32px; border-bottom: 2px solid var(--mid-gray); }
-.dash-tab { padding: 14px 28px; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: none; background: none; border: none; color: var(--gray); transition: all 0.2s; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.dash-tab { padding: 14px 28px; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: none; background: none; border: none; color: var(--gray); transition: all 0.2s; border-bottom: 2px solid transparent; margin-bottom: -2px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .dash-tab.active { color: var(--black); border-bottom-color: var(--lime); }
 .dash-tab:hover { color: var(--black); }
 .dash-panel { display: none; }
@@ -569,7 +579,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
 .footer-logo span { color: var(--lime); background: rgba(182,255,0,0.1); padding: 0 4px; }
 .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.3); line-height: 1.7; max-width: 260px; margin-bottom: 28px; }
 .footer-socials { display: flex; gap: 12px; }
-.social-btn { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; cursor: none; transition: all 0.2s; text-decoration: none; font-size: 16px; color: var(--white); }
+.social-btn { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; cursor: none; transition: all 0.2s; text-decoration: none; font-size: 16px; color: var(--white); -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .social-btn:hover { background: var(--lime); border-color: var(--lime); color: var(--black); }
 .footer-col-title { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
 .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -606,15 +616,18 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
 .divider { height: 2px; background: linear-gradient(to right, var(--lime), transparent); margin: 0 48px; opacity: 0.3; }
 
 /* RESPONSIVE */
+
+/* ── TABLET (≤1024px) ─────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   section { padding: 80px 32px; }
   nav { padding: 18px 32px; }
   .hero { padding: 120px 32px 80px; }
-  .hero-stats { right: 32px; }
+  .hero-stats { display: none; }
   .tournament-wrapper { grid-template-columns: 1fr; gap: 48px; }
   .why-grid { grid-template-columns: repeat(2, 1fr); }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
-  .gallery-item:first-child { grid-column: span 2; }
+  .gallery-item { height: 200px; }
+  .gallery-item:first-child { grid-column: span 2; height: 280px; }
   .gallery-item:nth-child(4) { grid-column: span 1; }
   .format-grid { grid-template-columns: 1fr; gap: 48px; }
   .sponsors-grid { grid-template-columns: repeat(3, 1fr); }
@@ -624,33 +637,125 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   .about-wrapper { grid-template-columns: 1fr; gap: 48px; }
   .about-visual { height: 280px; }
   .footer-top { grid-template-columns: 1fr 1fr; }
-  .hero-stats { display: none; }
 }
+
+/* ── MOBILE (≤768px) ─────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  section { padding: 64px 20px; }
-  nav { padding: 16px 20px; }
+  /* Base */
+  section { padding: 56px 16px; }
+  .divider { margin: 0 16px; }
+
+  /* Nav */
+  nav { padding: 14px 16px; }
+  nav.scrolled { padding: 12px 16px; }
   .nav-links, .nav-cta { display: none; }
   .hamburger { display: flex; }
-  .hero { padding: 100px 20px 60px; }
-  .hero-headline { font-size: clamp(64px, 18vw, 100px); }
-  .hero-btns { flex-direction: column; }
-  .btn-primary, .btn-outline { text-align: center; justify-content: center; }
-  .tournament-section { padding: 64px 20px; }
-  .t-details { grid-template-columns: 1fr 1fr; }
-  .why-grid { grid-template-columns: 1fr; }
-  .gallery-grid { grid-template-columns: 1fr; }
-  .gallery-item:first-child, .gallery-item:nth-child(4) { grid-column: span 1; }
+  .mobile-menu a { font-size: 36px; }
+
+  /* Hero */
+  .hero { padding: 90px 16px 56px; min-height: 100svh; }
+  .hero-headline { font-size: clamp(56px, 16vw, 88px); }
+  .hero-sub { font-size: 15px; margin: 16px 0 32px; }
+  .hero-btns { flex-direction: column; gap: 12px; }
+  .btn-primary, .btn-outline {
+    width: 100%; text-align: center; justify-content: center;
+    padding: 18px 24px; font-size: 13px;
+    /* bigger tap targets */
+    min-height: 52px;
+  }
+  .hero-scroll { display: none; }
+  .hero-ticker { top: 70px; }
+
+  /* Section headers */
+  .section-headline { font-size: clamp(40px, 12vw, 64px); }
+
+  /* Tournament */
+  .tournament-section { padding: 56px 16px; }
+  .t-headline { font-size: clamp(40px, 12vw, 72px); }
+  .t-details { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .t-detail { padding: 14px; }
+  .t-detail-val { font-size: 22px; }
+  .countdown-card { padding: 20px; }
+  .countdown-num { font-size: 40px; }
+
+  /* Why */
+  .why-grid { grid-template-columns: 1fr; gap: 2px; }
+  .why-card { padding: 32px 24px; }
+
+  /* Gallery */
+  .gallery-section { padding: 56px 16px; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; gap: 3px; }
+  .gallery-item { height: 140px; }
+  .gallery-item:first-child { grid-column: span 2; height: 200px; }
+  .gallery-item:nth-child(4) { grid-column: span 1; }
+  .gallery-overlay { opacity: 1; }
+
+  /* Format */
+  .format-rules { padding: 28px 20px; }
+  .format-step { padding: 20px 0; gap: 16px; }
+  .step-num { font-size: 36px; min-width: 44px; }
+
+  /* Sponsors */
   .sponsors-grid { grid-template-columns: repeat(2, 1fr); }
-  .sponsors-top { flex-direction: column; align-items: flex-start; gap: 24px; }
-  .sponsor-cta { flex-direction: column; gap: 24px; }
+  .sponsor-box { height: 80px; }
+  .sponsors-top { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .sponsor-cta { flex-direction: column; gap: 20px; padding: 28px 20px; }
+  .scta-title { font-size: 26px; }
+
+  /* Testimonials */
   .testi-grid { grid-template-columns: 1fr; }
+  .testi-card { padding: 24px; }
+
+  /* Registration */
+  .register-section { padding: 56px 16px; }
+  .form-card { padding: 24px 20px; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
   .form-row { grid-template-columns: 1fr; }
+  .form-input, .form-select { font-size: 16px; /* prevents iOS zoom */ padding: 14px 12px; }
+  .btn-form-next, .btn-form-prev { padding: 16px 16px; font-size: 12px; min-height: 52px; }
+  .register-steps { gap: 14px; }
+  .qr-box { padding: 16px; }
+
+  /* Dashboard */
+  .dashboard-section { padding: 56px 16px; }
+  .dash-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0; }
+  .dash-tab { padding: 12px 16px; font-size: 11px; white-space: nowrap; flex-shrink: 0; }
+  /* Scrollable tables */
+  .fixtures-table, .standings-table { font-size: 12px; }
+  .fixtures-table th, .standings-table th { padding: 10px 8px; font-size: 9px; }
+  .fixtures-table td, .standings-table td { padding: 12px 8px; }
+  .match-teams { font-size: 12px; }
   .results-grid { grid-template-columns: 1fr; }
-  .about-values { flex-wrap: wrap; }
-  .footer-top { grid-template-columns: 1fr; }
-  .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
-  .divider { margin: 0 20px; }
-  .dash-tabs { overflow-x: auto; }
+  .result-score { font-size: 32px; }
+  .download-btns { flex-direction: column; }
+  .download-btn { width: 100%; }
+  /* Table horizontal scroll wrapper — applied via JS */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* About */
+  .about-section { padding: 56px 16px; }
+  .about-visual { display: none; }
+  .about-wrapper { grid-template-columns: 1fr; gap: 0; }
+  .about-values { gap: 20px; flex-wrap: wrap; }
+  .about-value-num { font-size: 28px; }
+
+  /* Footer */
+  footer { padding: 48px 16px 28px; }
+  .footer-top { grid-template-columns: 1fr; gap: 36px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .footer-legal { flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .social-btn { width: 48px; height: 48px; /* bigger tap target */ }
+}
+
+/* ── SMALL MOBILE (≤390px) ───────────────────────────────────────────────── */
+@media (max-width: 390px) {
+  .hero-headline { font-size: 52px; }
+  .t-details { grid-template-columns: 1fr; }
+  .countdown-grid { gap: 6px; }
+  .countdown-num { font-size: 34px; }
+  .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-item { height: 160px; }
+  .gallery-item:first-child { grid-column: span 1; height: 200px; }
+  .vol-perks-grid { grid-template-columns: 1fr; }
 }
 
 /* VOLUNTEER SECTION */
@@ -669,7 +774,16 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
 .vol-perk { font-size: 12px; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04); padding: 10px 12px; border: 1px solid rgba(255,255,255,0.06); }
 .vol-form-wrap {}
 @media (max-width: 1024px) { .vol-wrapper { grid-template-columns: 1fr; } }
-@media (max-width: 768px) { .volunteer-section { padding: 64px 20px; } .vol-roles { grid-template-columns: 1fr; } .vol-perks-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 768px) {
+  .volunteer-section { padding: 56px 16px; }
+  .vol-roles { grid-template-columns: 1fr; gap: 12px; }
+  .vol-role { padding: 16px; }
+  .vol-perks-grid { grid-template-columns: 1fr 1fr; }
+  .vol-form-wrap .form-card { padding: 24px 20px; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
+}
+@media (max-width: 390px) {
+  .vol-perks-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -1200,7 +1314,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   </div>
 
   <div class="dash-panel active" id="tab-fixtures">
-    <table class="fixtures-table">
+    <div class="table-scroll"><table class="fixtures-table">
       <thead>
         <tr><th>Match</th><th>Teams</th><th>Date & Time</th><th>Venue</th><th>Status</th></tr>
       </thead>
@@ -1218,7 +1332,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   </div>
 
   <div class="dash-panel" id="tab-standings">
-    <table class="standings-table">
+    <div class="table-scroll"><table class="standings-table">
       <thead>
         <tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr>
       </thead>
@@ -1731,6 +1845,25 @@ function switchTab(tab) {
 // TICKER DUPLICATE
 const ticker = document.getElementById('tickerInner');
 // Already duplicated in HTML for seamless loop
+
+// MOBILE: wrap tables in scroll containers
+document.querySelectorAll('.fixtures-table, .standings-table').forEach(t => {
+  if (!t.parentElement.classList.contains('table-scroll')) {
+    const wrap = document.createElement('div');
+    wrap.className = 'table-scroll';
+    t.parentNode.insertBefore(wrap, t);
+    wrap.appendChild(t);
+  }
+});
+
+// MOBILE: disable hover-only animations on touch devices
+if ('ontouchstart' in window) {
+  document.querySelectorAll('.why-card').forEach(card => {
+    card.addEventListener('touchstart', function() {
+      this.classList.toggle('touch-active');
+    }, { passive: true });
+  });
+}
 
 // SMOOTH HOVER EFFECTS - Slot bar animate on scroll
 const slotBar = document.querySelector('.slots-fill');
