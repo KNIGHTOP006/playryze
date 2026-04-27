@@ -484,12 +484,35 @@ section { padding: 120px 48px; }
 
 /* DASHBOARD */
 .dashboard-section { background: var(--light-gray); padding: 120px 48px; }
-.dash-tabs { display: flex; gap: 0; margin: 48px 0 32px; border-bottom: 2px solid var(--mid-gray); }
-.dash-tab { padding: 14px 28px; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: none; background: none; border: none; color: var(--gray); transition: all 0.2s; border-bottom: 2px solid transparent; margin-bottom: -2px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.dash-tabs { display: flex; gap: 0; margin: 48px 0 0; border-bottom: 2px solid var(--mid-gray); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.dash-tab { padding: 14px 28px; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: none; background: none; border: none; color: var(--gray); transition: all 0.2s; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; flex-shrink: 0; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .dash-tab.active { color: var(--black); border-bottom-color: var(--lime); }
 .dash-tab:hover { color: var(--black); }
-.dash-panel { display: none; }
+.dash-panel { display: none; padding-top: 28px; }
 .dash-panel.active { display: block; }
+/* group sub-tabs */
+.group-tabs { display: flex; gap: 0; margin-bottom: 24px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.group-tab { padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: none; background: var(--white); border: 1px solid var(--mid-gray); color: var(--gray); transition: all 0.2s; white-space: nowrap; -webkit-tap-highlight-color: transparent; touch-action: manipulation; border-right: none; }
+.group-tab:last-child { border-right: 1px solid var(--mid-gray); }
+.group-tab.active { background: var(--black); color: var(--lime); border-color: var(--black); }
+.group-panel { display: none; }
+.group-panel.active { display: block; }
+/* group block */
+.group-block { margin-bottom: 8px; }
+.group-block-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+.group-block-title span { display: inline-block; background: var(--lime); color: var(--black); padding: 2px 10px; font-size: 14px; }
+.group-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+/* loading/error state */
+.dash-loading { text-align: center; padding: 48px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--gray); letter-spacing: 2px; }
+.dash-loading::after { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--lime); border-radius: 50%; margin-left: 8px; animation: pulse-dot 1s ease infinite; }
+.dash-error { text-align: center; padding: 32px; font-size: 13px; color: var(--gray); border: 1px dashed var(--mid-gray); }
+/* last updated */
+.last-updated { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.last-updated::before { content: ''; width: 6px; height: 6px; background: var(--lime); border-radius: 50%; animation: pulse-dot 2s ease infinite; }
+@media (max-width: 768px) {
+  .group-columns { grid-template-columns: 1fr; gap: 16px; }
+  .group-tab { padding: 10px 14px; font-size: 11px; }
+}
 
 .fixtures-table { width: 100%; border-collapse: collapse; }
 .fixtures-table th { text-align: left; padding: 12px 16px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-family: 'Space Mono', monospace; color: var(--gray); border-bottom: 2px solid var(--mid-gray); }
@@ -1686,7 +1709,7 @@ reveals.forEach(el => observer.observe(el));
 // FORM STEPS
 let currentStep = 1;
 const totalSteps = 4;
-const REGISTRATION_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwn58gs2UEznyWo7sBE6IznwYjxO39STFnQh6O7oetTpZFlX7Q7H-ob-Vx7MgDtwfej/exec';
+const REGISTRATION_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwDiYGQoh4R6CbSJqpAYlmDowGsl9I5OPHCDnQ069meDCrxNQs3LXG-k-Clk-pq2EpN/exec';
 
 function getRegistrationPayload() {
   const fileInput = document.getElementById('fileInput');
@@ -1835,12 +1858,189 @@ function handleUpload(input) {
 }
 
 // TABS
-function switchTab(tab) {
-  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+const FIXTURES_URL = REGISTRATION_WEBHOOK_URL; // same GAS endpoint, doGet serves fixtures
+
+let fixturesData = null; // cached
+let currentGroup = 'A';
+
+// Fallback static data used when sheet is not yet populated
+const STATIC_FIXTURES = (function() {
+  const groups = { A:[], B:[], C:[], D:[], E:[] };
+  const teams = {
+    A: ['Team 1','Team 2','Team 3','Team 4','Team 5'],
+    B: ['Team 6','Team 7','Team 8','Team 9','Team 10'],
+    C: ['Team 11','Team 12','Team 13','Team 14','Team 15'],
+    D: ['Team 16','Team 17','Team 18','Team 19','Team 20'],
+    E: ['Team 21','Team 22','Team 23','Team 24','Team 25']
+  };
+  let matchNo = 1;
+  ['A','B','C','D','E'].forEach(g => {
+    const t = teams[g];
+    for (let i = 0; i < t.length; i++) {
+      for (let j = i+1; j < t.length; j++) {
+        groups[g].push({
+          matchNo: matchNo++, round: 'Group Stage', group: g,
+          teamA: t[i], teamB: t[j],
+          scoreA: '', scoreB: '',
+          time: 'TBD', pitch: 'TBD', status: 'Upcoming'
+        });
+      }
+    }
+  });
+  return groups;
+})();
+
+function switchMainTab(tab, btn) {
+  document.querySelectorAll('#dashTabs .dash-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
 }
+
+function switchGroup(group, btn) {
+  currentGroup = group;
+  document.querySelectorAll('.group-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderGroup(group, fixturesData);
+}
+
+async function loadFixtures() {
+  try {
+    const res = await fetch(FIXTURES_URL + '?action=fixtures', { method: 'GET' });
+    const json = await res.json();
+    if (json.ok && json.fixtures && json.fixtures.length > 0) {
+      fixturesData = json.fixtures;
+      document.getElementById('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+    } else {
+      fixturesData = null;
+    }
+  } catch(e) {
+    fixturesData = null;
+  }
+  renderAllPanels();
+}
+
+function getGroupFixtures(group, data) {
+  if (data) return data.filter(f => f.group === group && f.round === 'Group Stage');
+  return STATIC_FIXTURES[group] || [];
+}
+
+function getStandings(group, fixtures) {
+  const teams = {};
+  fixtures.forEach(f => {
+    [f.teamA, f.teamB].forEach(t => {
+      if (!teams[t]) teams[t] = { name:t, p:0, w:0, d:0, l:0, gf:0, ga:0 };
+    });
+    if (f.status === 'Done' && f.scoreA !== '' && f.scoreB !== '') {
+      const a = parseInt(f.scoreA), b = parseInt(f.scoreB);
+      teams[f.teamA].p++; teams[f.teamB].p++;
+      teams[f.teamA].gf += a; teams[f.teamA].ga += b;
+      teams[f.teamB].gf += b; teams[f.teamB].ga += a;
+      if (a > b) { teams[f.teamA].w++; teams[f.teamB].l++; }
+      else if (b > a) { teams[f.teamB].w++; teams[f.teamA].l++; }
+      else { teams[f.teamA].d++; teams[f.teamB].d++; }
+    }
+  });
+  return Object.values(teams).sort((a,b) => {
+    const pa = a.w*3+a.d, pb = b.w*3+b.d;
+    if (pb !== pa) return pb - pa;
+    return (b.gf-b.ga) - (a.gf-a.ga);
+  });
+}
+
+function statusBadge(status) {
+  if (status === 'Live') return '<span class="badge badge-live">🔴 Live</span>';
+  if (status === 'Done') return '<span class="badge badge-done">Done</span>';
+  return '<span class="badge badge-upcoming">Upcoming</span>';
+}
+
+function renderFixturesTable(fixtures) {
+  if (!fixtures.length) return '<div class="dash-error">No fixtures yet. Check back on match day.</div>';
+  let rows = fixtures.map(f => {
+    const score = f.status === 'Done' ? `<strong>${f.scoreA}–${f.scoreB}</strong>` : (f.status === 'Live' ? `<strong style="color:var(--lime)">${f.scoreA||'?'}–${f.scoreB||'?'}</strong>` : '–');
+    return `<tr>
+      <td style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gray)">#${f.matchNo}</td>
+      <td class="match-teams">${f.teamA} <span class="match-vs">vs</span> ${f.teamB}</td>
+      <td>${score}</td>
+      <td style="font-size:12px;color:var(--gray)">${f.time||'TBD'}</td>
+      <td style="font-size:12px;color:var(--gray)">${f.pitch||'TBD'}</td>
+      <td>${statusBadge(f.status)}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="table-scroll"><table class="fixtures-table">
+    <thead><tr><th>#</th><th>Teams</th><th>Score</th><th>Time</th><th>Pitch</th><th>Status</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function renderStandingsTable(standings) {
+  if (!standings.length) return '';
+  let rows = standings.map((t,i) => {
+    const pts = t.w*3+t.d;
+    const gd = t.gf - t.ga;
+    return `<tr>
+      <td><span class="rank-num ${i===0?'gold':''}">${i+1}</span></td>
+      <td>${i<2?'<strong>'+t.name+'</strong>':t.name} ${i<2?'<span style="font-size:9px;background:var(--lime);color:var(--black);padding:1px 5px;font-family:Space Mono,monospace;letter-spacing:1px;margin-left:4px;">Q</span>':''}</td>
+      <td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
+      <td>${gd>0?'+'+gd:gd}</td>
+      <td class="pts">${pts}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="table-scroll" style="margin-top:20px"><table class="standings-table">
+    <thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function renderGroup(group, data) {
+  const fixtures = getGroupFixtures(group, data);
+  const standings = getStandings(group, fixtures);
+  const el = document.getElementById('groupContent');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="group-columns">
+      <div>
+        <div class="group-block-title">Fixtures <span>Group ${group}</span></div>
+        ${renderFixturesTable(fixtures)}
+      </div>
+      <div>
+        <div class="group-block-title">Standings <span>Group ${group}</span></div>
+        ${renderStandingsTable(standings)}
+        <div style="font-size:11px;color:var(--gray);margin-top:10px;font-family:'Space Mono',monospace">
+          <span style="background:var(--lime);color:var(--black);padding:1px 5px;">Q</span> = Qualified for Round 2
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderKnockoutPanel(round, panelId, data) {
+  const el = document.getElementById(panelId);
+  if (!el) return;
+  let fixtures = data ? data.filter(f => f.round === round) : [];
+  if (!fixtures.length) {
+    el.innerHTML = `<div class="dash-error">Fixtures will appear here once the ${round} begins.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="group-block-title">${round}</div>
+    ${renderFixturesTable(fixtures)}`;
+}
+
+function renderAllPanels() {
+  renderGroup(currentGroup, fixturesData);
+  renderKnockoutPanel('Round 2', 'round2Content', fixturesData);
+  renderKnockoutPanel('Semi Final', 'semisContent', fixturesData);
+  renderKnockoutPanel('Final', 'finalContent', fixturesData);
+  const lu = document.getElementById('lastUpdated');
+  if (lu && lu.textContent.startsWith('Loading')) {
+    lu.textContent = 'Showing pre-tournament schedule · Updates live on match day';
+  }
+}
+
+// Load on page ready, refresh every 60s on match day
+loadFixtures();
+setInterval(loadFixtures, 60000);
 
 // TICKER DUPLICATE
 const ticker = document.getElementById('tickerInner');
