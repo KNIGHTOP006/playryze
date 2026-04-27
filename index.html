@@ -536,8 +536,8 @@ section { padding: 120px 48px; }
 .upload-text { font-size: 13px; color: rgba(255,255,255,0.4); }
 .upload-text span { color: var(--lime); }
 .qr-box { margin-top: 24px; background: rgba(182,255,0,0.05); border: 1px solid rgba(182,255,0,0.2); padding: 24px; text-align: center; }
-.qr-placeholder { width: 160px; height: 160px; background: rgba(182,255,0,0.1); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; padding: 10px; overflow: hidden; border: 1px solid rgba(182,255,0,0.18); }
-.qr-placeholder img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.qr-placeholder { width: 148px; height: 148px; background: rgba(182,255,0,0.1); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; padding: 8px; overflow: hidden; border: 1px solid rgba(182,255,0,0.18); }
+.qr-image { width: 132px; height: 132px; max-width: 100%; max-height: 100%; object-fit: contain; display: block; flex-shrink: 0; }
 .qr-amount { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--lime); }
 .qr-label { font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'Space Mono', monospace; letter-spacing: 2px; }
 .success-state { text-align: center; padding: 32px 0; }
@@ -1255,7 +1255,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
         <div class="form-title">PAYMENT</div>
         <div class="qr-box">
         <div class="qr-placeholder">
-        <img src="qr-code.png" alt="QR Code">
+        <img src="qr-code.png" alt="QR Code" class="qr-image" width="132" height="132">
         </div>
             <div class="qr-amount">₹899 , 2K to be paid during check-in</div>
           <div class="qr-label" style="margin-top:4px;">UPI · Bank Transfer</div>
