@@ -1972,11 +1972,39 @@ function statusBadge(s) {
   return '<span class="badge badge-upcoming">Upcoming</span>';
 }
 
+function formatMatchTime(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return 'TBD';
+
+  const timeMatch = raw.match(/(\d{1,2})(?::(\d{2}))?\s*([AaPp]\.?[Mm]\.?)?/);
+  if (!timeMatch) return raw;
+
+  let hours = parseInt(timeMatch[1], 10);
+  const minutes = timeMatch[2] || '00';
+  let meridiem = timeMatch[3] ? timeMatch[3].replace(/\./g, '').toUpperCase() : '';
+
+  if (!meridiem) {
+    if (hours === 0) {
+      hours = 12;
+      meridiem = 'AM';
+    } else if (hours === 12) {
+      meridiem = 'PM';
+    } else if (hours > 12) {
+      hours -= 12;
+      meridiem = 'PM';
+    } else {
+      meridiem = 'AM';
+    }
+  }
+
+  return `${hours}:${minutes} ${meridiem}`;
+}
+
 function renderFixturesTable(fixtures) {
   if (!fixtures.length) return '<div class="dash-error">No fixtures yet.</div>';
   const rows = fixtures.map(f => {
     const score = f.status==='Done' ? `<strong>${f.scoreA}–${f.scoreB}</strong>` : f.status==='Live' ? `<strong style="color:var(--lime)">${f.scoreA||'?'}–${f.scoreB||'?'}</strong>` : '–';
-    return `<tr><td style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gray)">#${f.matchNo}</td><td class="match-teams">${f.teamA} <span class="match-vs">vs</span> ${f.teamB}</td><td>${score}</td><td style="font-size:12px;color:var(--gray)">${f.time||'TBD'}</td><td style="font-size:12px;color:var(--gray)">${f.pitch||'TBD'}</td><td>${statusBadge(f.status)}</td></tr>`;
+    return `<tr><td style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gray)">#${f.matchNo}</td><td class="match-teams">${f.teamA} <span class="match-vs">vs</span> ${f.teamB}</td><td>${score}</td><td style="font-size:12px;color:var(--gray)">${formatMatchTime(f.time)}</td><td style="font-size:12px;color:var(--gray)">${f.pitch||'TBD'}</td><td>${statusBadge(f.status)}</td></tr>`;
   }).join('');
   return `<div class="table-scroll"><table class="fixtures-table"><thead><tr><th>#</th><th>Teams</th><th>Score</th><th>Time</th><th>Pitch</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
