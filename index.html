@@ -165,11 +165,23 @@ nav.scrolled {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: var(--black); z-index: 999;
   flex-direction: column; align-items: center; justify-content: center; gap: 40px;
+  padding: 96px 24px 40px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .mobile-menu.open { display: flex; }
 .mobile-menu a { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--white); text-decoration: none; letter-spacing: 4px; transition: color 0.2s; }
 .mobile-menu a:hover { color: var(--lime); }
 .mobile-menu-close { position: absolute; top: 24px; right: 24px; background: none; border: none; color: var(--white); font-size: 32px; cursor: none; }
+body.menu-open {
+  overflow: hidden;
+  touch-action: none;
+}
+section[id],
+footer[id],
+div[id] {
+  scroll-margin-top: 92px;
+}
 
 /* HERO */
 .hero {
@@ -709,6 +721,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   nav { padding: 16px 20px; }
   .nav-links, .nav-cta { display: none; }
   .hamburger { display: flex; }
+  .mobile-menu a { font-size: clamp(30px, 10vw, 42px); letter-spacing: 2px; }
   .hero { padding: 100px 20px 60px; }
   .hero-headline { font-size: clamp(64px, 18vw, 100px); }
   .hero-btns { flex-direction: column; }
@@ -767,13 +780,13 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
     <li><a href="#about">About</a></li>
   </ul>
   <a href="#register" class="nav-cta">Register Now</a>
-  <button class="hamburger" id="hamburger" aria-label="Menu">
+  <button class="hamburger" id="hamburger" aria-label="Menu" aria-controls="mobileMenu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
 </nav>
 
 <!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
   <button class="mobile-menu-close" id="mobileClose">✕</button>
   <a href="#tournament" onclick="closeMobile()">Tournaments</a>
   <a href="#format" onclick="closeMobile()">Format</a>
@@ -1610,9 +1623,52 @@ const nav = document.getElementById('mainNav');
 window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
 
 // HAMBURGER
-document.getElementById('hamburger').addEventListener('click', () => { document.getElementById('mobileMenu').classList.add('open'); });
-document.getElementById('mobileClose').addEventListener('click', () => { document.getElementById('mobileMenu').classList.remove('open'); });
-function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileClose = document.getElementById('mobileClose');
+const mobileMenuLinks = mobileMenu.querySelectorAll('a[href^="#"]');
+
+function openMobile() {
+  mobileMenu.classList.add('open');
+  mobileMenu.setAttribute('aria-hidden', 'false');
+  hamburger.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('menu-open');
+}
+
+function closeMobile() {
+  mobileMenu.classList.remove('open');
+  mobileMenu.setAttribute('aria-hidden', 'true');
+  hamburger.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('menu-open');
+}
+
+function scrollToSection(hash) {
+  const target = document.querySelector(hash);
+  if (!target) return;
+  const navHeight = nav.offsetHeight;
+  const top = target.getBoundingClientRect().top + window.scrollY - navHeight - 12;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+hamburger.addEventListener('click', openMobile);
+mobileClose.addEventListener('click', closeMobile);
+
+mobileMenuLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const hash = link.getAttribute('href');
+    closeMobile();
+    requestAnimationFrame(() => {
+      setTimeout(() => scrollToSection(hash), 40);
+    });
+  });
+});
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) {
+    closeMobile();
+  }
+});
 
 // COUNTDOWN
 function updateCountdown() {
