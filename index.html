@@ -1525,18 +1525,19 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
     <div>
       <div class="footer-col-title">Contact</div>
       <ul class="footer-links">
-        <li><a href="mailto:hello@playryze.in">hello@playryze.in</a></li>
-        <li><a href="mailto:sponsors@playryze.in">sponsors@playryze.in</a></li>
-        <li><a href="https://wa.me/919999999999">WhatsApp Us</a></li>
+        <li><a href="mailto:playryzeofficial@gmail.com">playryzeofficial@gmail.com</a></li>
+        <li><a href="mailto:playryzeofficial@gmail.com">playryzeofficial@gmail.com</a></li>
+        <li><a href="https://chat.whatsapp.com/EVUbFmVEDIM9jmK1ifx0KK">WhatsApp Us</a></li>
         <li><a href="#">Bengaluru, KA</a></li>
       </ul>
     </div>
     <div>
       <div class="footer-col-title">Drop a Message</div>
       <div class="contact-form">
-        <input type="text" class="contact-input" placeholder="Your name">
-        <input type="email" class="contact-input" placeholder="Your email">
-        <textarea class="contact-input contact-textarea" placeholder="Your message"></textarea>
+        <input type="text" class="contact-input" id="footerContactName" placeholder="Your name">
+        <input type="email" class="contact-input" id="footerContactEmail" placeholder="Your email">
+        <textarea class="contact-input contact-textarea" id="footerContactMessage" placeholder="Your message"></textarea>
+        <div id="footerContactStatus" style="display:none;margin-top:4px;margin-bottom:10px;font-size:12px;font-family:'Space Mono',monospace;"></div>
         <button class="contact-submit">Send →</button>
       </div>
     </div>
@@ -1968,6 +1969,43 @@ async function submitVolunteer() {
     submitButton.disabled = false;
     submitButton.textContent = 'Submit Application →';
   }
+}
+function setFooterContactStatus(message, isError) {
+  const status = document.getElementById('footerContactStatus');
+  if (!status) return;
+  status.style.display = 'block';
+  status.style.color = isError ? '#ff8a8a' : 'var(--lime)';
+  status.textContent = message;
+}
+
+function sendFooterMessage() {
+  const whatsappNumber = '9444351061';
+  const name = document.getElementById('footerContactName').value.trim();
+  const email = document.getElementById('footerContactEmail').value.trim();
+  const message = document.getElementById('footerContactMessage').value.trim();
+
+  if (!message) {
+    setFooterContactStatus('Please enter your message before opening WhatsApp.', true);
+    return;
+  }
+
+  const text = [
+    'Hi PlayRyze,',
+    '',
+    'I wanted to get in touch through the website footer.',
+    '',
+    'Name: ' + (name || 'Not provided'),
+    'Email: ' + (email || 'Not provided'),
+    'Message: ' + message
+  ].join('\n');
+
+  setFooterContactStatus('Opening WhatsApp...', false);
+  window.open('https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(text), '_blank');
+}
+
+const footerContactButton = document.querySelector('.contact-form .contact-submit');
+if (footerContactButton) {
+  footerContactButton.addEventListener('click', sendFooterMessage);
 }
 </script>
 </body>
