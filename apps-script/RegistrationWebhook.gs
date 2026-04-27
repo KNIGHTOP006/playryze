@@ -100,7 +100,7 @@ function doPost(e) {
 
 function doGet(e) {
   const action = e && e.parameter && e.parameter.action;
-
+  
   if (action === 'fixtures') {
     try {
       const spreadsheet = getSpreadsheet_();
