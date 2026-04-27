@@ -7,6 +7,11 @@ const DRIVE_FOLDER_ID = '1CMcseZKlsDI0vvBSYOqXLobWPw2wV_sT';
 function doPost(e) {  
   try {
     const payload = JSON.parse(e.postData.contents || '{}');
+
+    if (payload.action === 'fixtures') {
+      return getFixturesResponse_();
+    }
+
     const submissionType = inferSubmissionType_(payload);
     const spreadsheet = getSpreadsheet_();
 
@@ -102,47 +107,50 @@ function doGet(e) {
   const action = e && e.parameter && e.parameter.action;
   
   if (action === 'fixtures') {
-    try {
-      const spreadsheet = getSpreadsheet_();
-      let sheet = spreadsheet.getSheetByName('Fixtures');
-
-      // If Fixtures sheet doesn't exist yet, return empty ok
-      if (!sheet) {
-        return jsonResponse_({ ok: true, fixtures: [] });
-      }
-
-      const data = sheet.getDataRange().getValues();
-      if (data.length < 2) {
-        return jsonResponse_({ ok: true, fixtures: [] });
-      }
-
-      const headers = data[0].map(h => String(h).trim().toLowerCase().replace(/\s+/g, '_'));
-      const fixtures = data.slice(1)
-        .filter(row => row.some(cell => cell !== ''))
-        .map(row => {
-          const obj = {};
-          headers.forEach((h, i) => { obj[h] = String(row[i] || '').trim(); });
-          return {
-            matchNo:  obj['match_no']  || obj['match'] || '',
-            round:    obj['round']     || 'Group Stage',
-            group:    obj['group']     || '',
-            teamA:    obj['team_a']    || '',
-            teamB:    obj['team_b']    || '',
-            scoreA:   obj['score_a']   || '',
-            scoreB:   obj['score_b']   || '',
-            time:     obj['time']      || 'TBD',
-            pitch:    obj['pitch']     || 'TBD',
-            status:   obj['status']    || 'Upcoming'
-          };
-        });
-
-      return jsonResponse_({ ok: true, fixtures: fixtures });
-    } catch (err) {
-      return jsonResponse_({ ok: false, error: err.message, fixtures: [] });
-    }
+    return getFixturesResponse_();
   }
 
   return jsonResponse_({ ok: true, message: 'PlayRyze webhook is live.' });
+}
+
+function getFixturesResponse_() {
+  try {
+    const spreadsheet = getSpreadsheet_();
+    let sheet = spreadsheet.getSheetByName('Fixtures');
+
+    if (!sheet) {
+      return jsonResponse_({ ok: true, fixtures: [] });
+    }
+
+    const data = sheet.getDataRange().getValues();
+    if (data.length < 2) {
+      return jsonResponse_({ ok: true, fixtures: [] });
+    }
+
+    const headers = data[0].map(h => String(h).trim().toLowerCase().replace(/\s+/g, '_'));
+    const fixtures = data.slice(1)
+      .filter(row => row.some(cell => cell !== ''))
+      .map(row => {
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = String(row[i] || '').trim(); });
+        return {
+          matchNo: obj['match_no'] || '',
+          round: obj['round'] || 'Group Stage',
+          group: obj['group'] || '',
+          teamA: obj['team_a'] || '',
+          teamB: obj['team_b'] || '',
+          scoreA: obj['score_a'] || '',
+          scoreB: obj['score_b'] || '',
+          time: obj['time'] || 'TBD',
+          pitch: obj['pitch'] || 'TBD',
+          status: obj['status'] || 'Upcoming'
+        };
+      });
+
+    return jsonResponse_({ ok: true, fixtures: fixtures });
+  } catch (err) {
+    return jsonResponse_({ ok: false, error: err.message, fixtures: [] });
+  }
 }
 
 function getSpreadsheet_() {

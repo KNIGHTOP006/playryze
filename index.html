@@ -1727,10 +1727,14 @@ function switchGroup(group, btn) {
 
 async function loadFixtures() {
   try {
-const res = await fetch(REGISTRATION_WEBHOOK_URL + '?action=fixtures', {
-  method: 'GET',
-  redirect: 'follow'
-});    const json = await res.json();
+    const res = await fetch(REGISTRATION_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({ action: 'fixtures' })
+    });
+    const json = await res.json();
     if (json.ok && json.fixtures && json.fixtures.length > 0) {
       fixturesData = json.fixtures;
       const lu = document.getElementById('lastUpdated');
