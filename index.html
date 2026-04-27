@@ -2017,13 +2017,13 @@ function renderFixturesTable(fixtures) {
   return `<div class="table-scroll"><table class="fixtures-table"><thead><tr><th>#</th><th>Teams</th><th>Score</th><th>Time</th><th>Pitch</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-function renderStandingsTable(standings) {
+function renderStandingsTable(standings, qualificationLabel) {
   if (!standings.length) return '';
   const rows = standings.map((t,i) => {
     const pts = t.w*3+t.d, gd = t.gf-t.ga;
     return `<tr><td><span class="rank-num ${i===0?'gold':''}">${i+1}</span></td><td>${i<2?'<strong>'+t.name+'</strong>':t.name}${i<2?' <span style="font-size:9px;background:var(--lime);color:var(--black);padding:1px 5px;font-family:Space Mono,monospace;letter-spacing:1px">Q</span>':''}</td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${gd>0?'+'+gd:gd}</td><td class="pts">${pts}</td></tr>`;
   }).join('');
-  return `<div class="table-scroll" style="margin-top:20px"><table class="standings-table"><thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${rows}</tbody></table></div><div style="font-size:11px;color:var(--gray);margin-top:10px;font-family:'Space Mono',monospace"><span style="background:var(--lime);color:var(--black);padding:1px 5px">Q</span> = Qualified for Round 2</div>`;
+  return `<div class="table-scroll" style="margin-top:20px"><table class="standings-table"><thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${rows}</tbody></table></div><div style="font-size:11px;color:var(--gray);margin-top:10px;font-family:'Space Mono',monospace"><span style="background:var(--lime);color:var(--black);padding:1px 5px">Q</span> = ${qualificationLabel || 'Qualified'}</div>`;
 }
 
 function renderGroup(group, data) {
@@ -2031,7 +2031,29 @@ function renderGroup(group, data) {
   if (!el) return;
   const fixtures = getGroupFixtures(group, data);
   const standings = getStandings(fixtures);
-  el.innerHTML = `<div class="group-columns"><div><div class="group-block-title">Fixtures <span>Group ${group}</span></div>${renderFixturesTable(fixtures)}</div><div><div class="group-block-title">Standings <span>Group ${group}</span></div>${renderStandingsTable(standings)}</div></div>`;
+  el.innerHTML = `<div class="group-columns"><div><div class="group-block-title">Fixtures <span>Group ${group}</span></div>${renderFixturesTable(fixtures)}</div><div><div class="group-block-title">Standings <span>Group ${group}</span></div>${renderStandingsTable(standings, 'Qualified for Round 2')}</div></div>`;
+}
+
+function renderRound2Groups(data) {
+  const el = document.getElementById('round2Content');
+  if (!el) return;
+
+  const qaFixtures = data ? data.filter(f => f.round === 'Round 2' && f.group === 'QA') : [];
+  const qbFixtures = data ? data.filter(f => f.round === 'Round 2' && f.group === 'QB') : [];
+
+  if (!qaFixtures.length && !qbFixtures.length) {
+    el.innerHTML = '<div class="dash-error">Round 2 fixtures will appear here once QA and QB are published.</div>';
+    return;
+  }
+
+  const sections = ['QA', 'QB'].map(group => {
+    const fixtures = data ? data.filter(f => f.round === 'Round 2' && f.group === group) : [];
+    const standings = getStandings(fixtures);
+
+    return `<div style="margin-bottom:40px"><div class="group-columns"><div><div class="group-block-title">Fixtures <span>${group}</span></div>${renderFixturesTable(fixtures)}</div><div><div class="group-block-title">Standings <span>${group}</span></div>${renderStandingsTable(standings, 'Top 2 qualify')}</div></div></div>`;
+  }).join('');
+
+  el.innerHTML = sections;
 }
 
 function renderKnockoutPanel(round, panelId, data) {
@@ -2043,7 +2065,7 @@ function renderKnockoutPanel(round, panelId, data) {
 
 function renderAllPanels() {
   renderGroup(currentGroup, fixturesData);
-  renderKnockoutPanel('Round 2', 'round2Content', fixturesData);
+  renderRound2Groups(fixturesData);
   renderKnockoutPanel('Semi Final', 'semisContent', fixturesData);
   renderKnockoutPanel('Final', 'finalContent', fixturesData);
   const lu = document.getElementById('lastUpdated');
