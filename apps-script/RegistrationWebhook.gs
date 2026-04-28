@@ -3,7 +3,7 @@ const VOLUNTEER_SHEET_NAME = 'Volunteers';
 const SPREADSHEET_ID = '1bN_csCUQdPTpyXf1znjtxK-VfYe1pjRD_OfNUr71WVI';
 const OWNER_EMAIL = 'gripsmartx4@gmail.com';
 const DRIVE_FOLDER_ID = '1CMcseZKlsDI0vvBSYOqXLobWPw2wV_sT';
-const GALLERY_FOLDER_ID = 'PASTE_PUBLIC_GALLERY_FOLDER_ID_HERE';
+const GALLERY_FOLDER_ID = '15HPiobevOBWyduMrlWViyZ_sGGeWDYyP';
 const GALLERY_CATEGORY_DEFINITIONS = [
   { key: 'match-action', title: 'Match Action' },
   { key: 'champions', title: 'Champions' },
