@@ -4,6 +4,13 @@ const SPREADSHEET_ID = '1bN_csCUQdPTpyXf1znjtxK-VfYe1pjRD_OfNUr71WVI';
 const OWNER_EMAIL = 'gripsmartx4@gmail.com';
 const DRIVE_FOLDER_ID = '1CMcseZKlsDI0vvBSYOqXLobWPw2wV_sT';
 const GALLERY_FOLDER_ID = 'PASTE_PUBLIC_GALLERY_FOLDER_ID_HERE';
+const GALLERY_CATEGORY_DEFINITIONS = [
+  { key: 'match-action', title: 'Match Action' },
+  { key: 'champions', title: 'Champions' },
+  { key: 'trophy-moments', title: 'Trophy Moments' },
+  { key: 'previous-winners', title: 'Previous Winners' },
+  { key: 'media-coverage', title: 'Media Coverage' }
+];
 
 function doPost(e) {  
   try {
@@ -169,49 +176,87 @@ function getGalleryResponse_() {
   try {
     const folderId = GALLERY_FOLDER_ID;
     if (!folderId || folderId === 'PASTE_PUBLIC_GALLERY_FOLDER_ID_HERE') {
-      return jsonResponse_({ ok: true, items: [] });
+      return jsonResponse_({ ok: true, categories: [] });
     }
 
-    const folder = DriveApp.getFolderById(folderId);
-    const files = folder.getFiles();
-    const items = [];
+    const rootFolder = DriveApp.getFolderById(folderId);
+    const folderMap = getGallerySubfolderMap_(rootFolder);
+    const categories = GALLERY_CATEGORY_DEFINITIONS.map(function(definition) {
+      var folder = folderMap[normalizeGalleryKey_(definition.key)] || folderMap[normalizeGalleryKey_(definition.title)];
+      var items = folder ? getGalleryItemsFromFolder_(folder) : [];
 
-    while (files.hasNext()) {
-      const file = files.next();
-      const mimeType = String(file.getMimeType() || '');
-      if (mimeType.indexOf('image/') !== 0) {
-        continue;
-      }
-
-      ensureGalleryFileIsPublic_(file);
-
-      items.push({
-        id: file.getId(),
-        name: file.getName(),
-        updatedAt: file.getLastUpdated().toISOString(),
-        imageUrl: 'https://drive.google.com/thumbnail?id=' + file.getId() + '&sz=w1600',
-        fullImageUrl: 'https://drive.google.com/uc?export=view&id=' + file.getId(),
-        alt: buildGalleryAlt_(file.getName())
-      });
-    }
-
-    items.sort(function(a, b) {
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      return {
+        key: definition.key,
+        title: definition.title,
+        count: items.length,
+        coverImageUrl: items.length ? items[0].imageUrl : '',
+        coverFullImageUrl: items.length ? items[0].fullImageUrl : '',
+        items: items
+      };
     });
 
     return jsonResponse_({
       ok: true,
-      items: items,
+      categories: categories,
       updatedAt: new Date().toISOString()
     });
   } catch (err) {
     return jsonResponse_({
       ok: false,
       error: err.message || 'Failed to load gallery.',
-      items: [],
+      categories: [],
       updatedAt: new Date().toISOString()
     });
   }
+}
+
+function getGallerySubfolderMap_(rootFolder) {
+  var folders = rootFolder.getFolders();
+  var map = {};
+
+  while (folders.hasNext()) {
+    var folder = folders.next();
+    map[normalizeGalleryKey_(folder.getName())] = folder;
+  }
+
+  return map;
+}
+
+function getGalleryItemsFromFolder_(folder) {
+  var files = folder.getFiles();
+  var items = [];
+
+  while (files.hasNext()) {
+    var file = files.next();
+    var mimeType = String(file.getMimeType() || '');
+    if (mimeType.indexOf('image/') !== 0) {
+      continue;
+    }
+
+    ensureGalleryFileIsPublic_(file);
+
+    items.push({
+      id: file.getId(),
+      name: file.getName(),
+      updatedAt: file.getLastUpdated().toISOString(),
+      imageUrl: 'https://drive.google.com/thumbnail?id=' + file.getId() + '&sz=w1600',
+      fullImageUrl: 'https://drive.google.com/uc?export=view&id=' + file.getId(),
+      alt: buildGalleryAlt_(file.getName())
+    });
+  }
+
+  items.sort(function(a, b) {
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+  });
+
+  return items;
+}
+
+function normalizeGalleryKey_(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 function ensureGalleryFileIsPublic_(file) {

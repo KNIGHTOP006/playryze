@@ -439,6 +439,26 @@ section { padding: 120px 48px; }
 .gallery-item.has-photo .gallery-visual { padding: 0; }
 .gallery-item.has-photo .gallery-photo { transition: transform 0.5s ease; }
 .gallery-item.has-photo:hover .gallery-photo { transform: scale(1.05); }
+.gallery-item.has-photo .gallery-overlay { opacity: 1; }
+.gallery-item.gallery-button {
+  appearance: none;
+  border: none;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+}
+.gallery-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gallery-count {
+  font-size: 10px;
+  color: rgba(255,255,255,0.72);
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
+}
 .gallery-empty {
   grid-column: 1 / -1;
   min-height: 220px;
@@ -451,6 +471,92 @@ section { padding: 120px 48px; }
   color: rgba(255,255,255,0.7);
   font-size: 14px;
   line-height: 1.8;
+}
+.gallery-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 1200;
+  padding: 32px 24px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.gallery-modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+.gallery-modal-panel {
+  max-width: 1120px;
+  margin: 0 auto;
+  background: #0d0d0d;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 28px;
+}
+.gallery-modal-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.gallery-modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 4vw, 56px);
+  letter-spacing: 1px;
+  color: var(--white);
+  line-height: 0.95;
+}
+.gallery-modal-meta {
+  margin-top: 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
+}
+.gallery-modal-close {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: transparent;
+  color: var(--white);
+  padding: 12px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.gallery-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.gallery-modal-card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #171717;
+}
+.gallery-modal-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.gallery-modal-card:hover img { transform: scale(1.03); }
+.gallery-modal-card span {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  font-size: 10px;
+  color: var(--lime);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
 }
 
 /* Gallery placeholder visuals */
@@ -809,6 +915,11 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   }
   .gallery-visual { font-size: 48px; }
   .gallery-tag { font-size: 10px; letter-spacing: 1.6px; }
+  .gallery-modal { padding: 20px 12px; }
+  .gallery-modal-panel { padding: 18px; }
+  .gallery-modal-top { flex-direction: column; gap: 16px; }
+  .gallery-modal-close { width: 100%; text-align: center; }
+  .gallery-modal-grid { grid-template-columns: 1fr 1fr; }
   .sponsors-grid { grid-template-columns: repeat(2, 1fr); }
   .sponsors-top { flex-direction: column; align-items: flex-start; gap: 24px; }
   .sponsor-cta { flex-direction: column; gap: 24px; }
@@ -1071,6 +1182,18 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
     <a href="https://www.instagram.com/play.ryze/" target="_blank" class="btn-outline" style="border-color:rgba(255,255,255,0.2);">Follow @playryze on Instagram</a>
   </div>
 </section>
+<div class="gallery-modal" id="galleryModal" aria-hidden="true">
+  <div class="gallery-modal-panel">
+    <div class="gallery-modal-top">
+      <div>
+        <div class="gallery-modal-title" id="galleryModalTitle">Gallery</div>
+        <div class="gallery-modal-meta" id="galleryModalMeta">0 photos</div>
+      </div>
+      <button type="button" class="gallery-modal-close" id="galleryModalClose">Close</button>
+    </div>
+    <div class="gallery-modal-grid" id="galleryModalGrid"></div>
+  </div>
+</div>
 
 <div class="divider"></div>
 
@@ -1749,8 +1872,14 @@ reveals.forEach(el => observer.observe(el));
 // FORM STEPS
 let currentStep = 1;
 const totalSteps = 4;
-const REGISTRATION_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw_gqdjvodB9f4BhB-QxVd4bZGf212V-FXOCiH0jgHUAlsHI-XTE17kV3NBZrVIA5J-/exec';
-const GALLERY_LIMIT = 12;
+const REGISTRATION_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz0uoS0mliONMhmNjIJTJD0L8QXKxoPlOf6eluiQUJYEfsqSU1D3WNCCL-bwfe_kLrM/exec';
+const GALLERY_CATEGORY_CONFIG = [
+  { key: 'match-action', title: 'Match Action', className: 'gv-1', placeholder: '<svg width="120" height="120" viewBox="0 0 120 120" fill="none" opacity="0.3"><circle cx="60" cy="60" r="56" stroke="#B6FF00" stroke-width="2"/><path d="M60 20L72 52L106 52L78 72L88 104L60 84L32 104L42 72L14 52L48 52Z" fill="none" stroke="#B6FF00" stroke-width="2"/></svg>' },
+  { key: 'champions', title: 'Champions', className: 'gv-2', placeholder: '<svg width="80" height="80" viewBox="0 0 80 80" fill="none" opacity="0.4"><path d="M40 8L52 32H76L56 48L64 72L40 56L16 72L24 48L4 32H28Z" fill="#B6FF00"/></svg>' },
+  { key: 'trophy-moments', title: 'Trophy Moments', className: 'gv-3', placeholder: '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" opacity="0.4"><rect x="8" y="20" width="48" height="36" rx="2" stroke="#B6FF00" stroke-width="2"/><path d="M16 20V16C16 10.477 20.477 6 26 6H38C43.523 6 48 10.477 48 16V20" stroke="#B6FF00" stroke-width="2"/><circle cx="32" cy="38" r="8" stroke="#B6FF00" stroke-width="2"/></svg>' },
+  { key: 'previous-winners', title: 'Previous Winners', className: 'gv-4', placeholder: '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:28px;color:rgba(182,255,0,0.3);letter-spacing:4px;">PREVIOUS<br>WINNERS</span>' },
+  { key: 'media-coverage', title: 'Media Coverage', className: 'gv-5', placeholder: '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" opacity="0.4"><rect x="4" y="8" width="56" height="48" rx="4" stroke="#B6FF00" stroke-width="2"/><circle cx="22" cy="26" r="8" stroke="#B6FF00" stroke-width="2"/><path d="M4 44L20 32L30 42L44 28L60 44" stroke="#B6FF00" stroke-width="2" stroke-linejoin="round"/></svg>' }
+];
 
 function getRegistrationPayload() {
   const fileInput = document.getElementById('fileInput');
@@ -1921,30 +2050,88 @@ function formatGalleryLabel(name) {
   return cleaned.length > 32 ? cleaned.slice(0, 32).trim() + '...' : cleaned;
 }
 
-function renderGallery(items) {
+function getGalleryCategoryMap(categories) {
+  const map = {};
+  (categories || []).forEach((category) => {
+    map[category.key] = category;
+  });
+  return map;
+}
+
+function getGalleryVisualMarkup(config, category) {
+  if (category && category.coverImageUrl) {
+    return `
+      <div class="gallery-visual">
+        <img class="gallery-photo" src="${escapeHtml(category.coverImageUrl)}" alt="${escapeHtml(category.title || config.title)}" loading="lazy">
+      </div>
+    `;
+  }
+
+  return `<div class="gallery-visual ${config.className}">${config.placeholder}</div>`;
+}
+
+function openGalleryCategory(categoryKey) {
+  const modal = document.getElementById('galleryModal');
+  const title = document.getElementById('galleryModalTitle');
+  const meta = document.getElementById('galleryModalMeta');
+  const grid = document.getElementById('galleryModalGrid');
+  if (!modal || !title || !meta || !grid) return;
+
+  const category = window.playRyzeGalleryMap && window.playRyzeGalleryMap[categoryKey];
+  const config = GALLERY_CATEGORY_CONFIG.find((item) => item.key === categoryKey);
+  const items = category && Array.isArray(category.items) ? category.items : [];
+
+  title.textContent = config ? config.title : 'Gallery';
+  meta.textContent = items.length ? `${items.length} photos` : 'No photos yet';
+  grid.innerHTML = items.length
+    ? items.map((item) => `
+        <a class="gallery-modal-card" href="${escapeHtml(item.fullImageUrl || item.imageUrl || '#')}" target="_blank" rel="noopener noreferrer">
+          <img src="${escapeHtml(item.imageUrl || item.fullImageUrl || '')}" alt="${escapeHtml(item.alt || item.name || 'PlayRyze gallery image')}" loading="lazy">
+          <span>${escapeHtml(formatGalleryLabel(item.name))}</span>
+        </a>
+      `).join('')
+    : '<div class="gallery-empty">Upload images into this category folder in Drive and they will appear here.</div>';
+
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('menu-open');
+}
+
+function closeGalleryModal() {
+  const modal = document.getElementById('galleryModal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('menu-open');
+}
+
+function renderGallery(categories) {
   const galleryGrid = document.getElementById('galleryGrid');
   if (!galleryGrid) return;
 
-  if (!items.length) {
-    galleryGrid.innerHTML = '<div class="gallery-empty">Add image files to your Google Drive gallery folder and they will show up here automatically.</div>';
-    return;
-  }
+  const categoryMap = getGalleryCategoryMap(categories);
+  window.playRyzeGalleryMap = categoryMap;
 
-  galleryGrid.innerHTML = items.slice(0, GALLERY_LIMIT).map((item) => {
-    const imageUrl = escapeHtml(item.imageUrl || item.fullImageUrl || '');
-    const fullImageUrl = escapeHtml(item.fullImageUrl || item.imageUrl || '#');
-    const alt = escapeHtml(item.alt || item.name || 'PlayRyze gallery image');
-    const label = escapeHtml(formatGalleryLabel(item.name));
-
+  galleryGrid.innerHTML = GALLERY_CATEGORY_CONFIG.map((config) => {
+    const category = categoryMap[config.key] || { key: config.key, title: config.title, count: 0, items: [] };
+    const countLabel = category.count === 1 ? '1 photo' : `${category.count || 0} photos`;
+    const stateClass = category.coverImageUrl ? 'has-photo' : '';
     return `
-      <a class="gallery-item has-photo" href="${fullImageUrl}" target="_blank" rel="noopener noreferrer" aria-label="${alt}">
-        <div class="gallery-visual">
-          <img class="gallery-photo" src="${imageUrl}" alt="${alt}" loading="lazy">
+      <button type="button" class="gallery-item gallery-button ${stateClass}" data-gallery-key="${config.key}" aria-label="Open ${escapeHtml(config.title)} gallery">
+        ${getGalleryVisualMarkup(config, category)}
+        <div class="gallery-overlay">
+          <div class="gallery-copy">
+            <span class="gallery-tag">${escapeHtml(config.title)}</span>
+            <span class="gallery-count">${escapeHtml(countLabel)}</span>
+          </div>
         </div>
-        <div class="gallery-overlay"><span class="gallery-tag">${label}</span></div>
-      </a>
+      </button>
     `;
   }).join('');
+
+  galleryGrid.querySelectorAll('[data-gallery-key]').forEach((button) => {
+    button.addEventListener('click', () => openGalleryCategory(button.getAttribute('data-gallery-key')));
+  });
 }
 
 async function loadGallery() {
@@ -1965,11 +2152,32 @@ async function loadGallery() {
       throw new Error(json.error || 'Unable to load gallery.');
     }
 
-    renderGallery(Array.isArray(json.items) ? json.items : []);
+    renderGallery(Array.isArray(json.categories) ? json.categories : []);
   } catch (error) {
-    galleryGrid.innerHTML = '<div class="gallery-empty">Gallery is temporarily unavailable. Add photos to Drive and redeploy the Apps Script if this is your first setup.</div>';
+    galleryGrid.innerHTML = '<div class="gallery-empty">Gallery is temporarily unavailable. Add category subfolders in Drive and redeploy the Apps Script if this is your first setup.</div>';
   }
 }
+
+const galleryModal = document.getElementById('galleryModal');
+const galleryModalClose = document.getElementById('galleryModalClose');
+
+if (galleryModalClose) {
+  galleryModalClose.addEventListener('click', closeGalleryModal);
+}
+
+if (galleryModal) {
+  galleryModal.addEventListener('click', (event) => {
+    if (event.target === galleryModal) {
+      closeGalleryModal();
+    }
+  });
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && galleryModal && galleryModal.classList.contains('open')) {
+    closeGalleryModal();
+  }
+});
 
 let fixturesData = null;
 let currentGroup = 'A';
