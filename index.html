@@ -2136,7 +2136,7 @@ function renderGallery(categories) {
 
 async function loadGallery() {
   const galleryGrid = document.getElementById('galleryGrid');
-  if (!galleryGrid || REGISTRATION_WEBHOOK_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') return;
+  if (!galleryGrid || REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbyPNPHJMfRcsMf3nOLcalaP-hXZXGo13lLkybJUeAOfEnGKmTm5venXvojWx5NvSuxQ/exec') return;
 
   try {
     const res = await fetch(REGISTRATION_WEBHOOK_URL + '?t=' + Date.now(), {
@@ -2397,7 +2397,7 @@ async function submitVolunteer() {
   const submitButton = document.getElementById('submitVolunteerBtn');
 
   try {
-    if (REGISTRATION_WEBHOOK_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+    if (REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbyPNPHJMfRcsMf3nOLcalaP-hXZXGo13lLkybJUeAOfEnGKmTm5venXvojWx5NvSuxQ/exec') {
       throw new Error('Add your Google Apps Script web app URL before using the live volunteer form.');
     }
 
