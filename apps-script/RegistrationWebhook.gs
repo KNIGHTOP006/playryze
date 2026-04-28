@@ -3,6 +3,7 @@ const VOLUNTEER_SHEET_NAME = 'Volunteers';
 const SPREADSHEET_ID = '1bN_csCUQdPTpyXf1znjtxK-VfYe1pjRD_OfNUr71WVI';
 const OWNER_EMAIL = 'gripsmartx4@gmail.com';
 const DRIVE_FOLDER_ID = '1CMcseZKlsDI0vvBSYOqXLobWPw2wV_sT';
+const GALLERY_FOLDER_ID = 'PASTE_PUBLIC_GALLERY_FOLDER_ID_HERE';
 
 function doPost(e) {  
   try {
@@ -10,6 +11,10 @@ function doPost(e) {
 
     if (payload.action === 'fixtures') {
       return getFixturesResponse_();
+    }
+
+    if (payload.action === 'gallery') {
+      return getGalleryResponse_();
     }
 
     const submissionType = inferSubmissionType_(payload);
@@ -110,6 +115,10 @@ function doGet(e) {
     return getFixturesResponse_();
   }
 
+  if (action === 'gallery') {
+    return getGalleryResponse_();
+  }
+
   return jsonResponse_({ ok: true, message: 'PlayRyze webhook is live.' });
 }
 
@@ -154,6 +163,70 @@ function getFixturesResponse_() {
   } catch (err) {
     return jsonResponse_({ ok: false, error: err.message, fixtures: [], updatedAt: new Date().toISOString() });
   }
+}
+
+function getGalleryResponse_() {
+  try {
+    const folderId = GALLERY_FOLDER_ID;
+    if (!folderId || folderId === 'PASTE_PUBLIC_GALLERY_FOLDER_ID_HERE') {
+      return jsonResponse_({ ok: true, items: [] });
+    }
+
+    const folder = DriveApp.getFolderById(folderId);
+    const files = folder.getFiles();
+    const items = [];
+
+    while (files.hasNext()) {
+      const file = files.next();
+      const mimeType = String(file.getMimeType() || '');
+      if (mimeType.indexOf('image/') !== 0) {
+        continue;
+      }
+
+      ensureGalleryFileIsPublic_(file);
+
+      items.push({
+        id: file.getId(),
+        name: file.getName(),
+        updatedAt: file.getLastUpdated().toISOString(),
+        imageUrl: 'https://drive.google.com/thumbnail?id=' + file.getId() + '&sz=w1600',
+        fullImageUrl: 'https://drive.google.com/uc?export=view&id=' + file.getId(),
+        alt: buildGalleryAlt_(file.getName())
+      });
+    }
+
+    items.sort(function(a, b) {
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+
+    return jsonResponse_({
+      ok: true,
+      items: items,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    return jsonResponse_({
+      ok: false,
+      error: err.message || 'Failed to load gallery.',
+      items: [],
+      updatedAt: new Date().toISOString()
+    });
+  }
+}
+
+function ensureGalleryFileIsPublic_(file) {
+  if (file.getSharingAccess() !== DriveApp.Access.ANYONE_WITH_LINK ||
+      file.getSharingPermission() !== DriveApp.Permission.VIEW) {
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  }
+}
+
+function buildGalleryAlt_(fileName) {
+  return String(fileName || 'PlayRyze gallery image')
+    .replace(/\.[a-z0-9]+$/i, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function normalizeRound_(value) {

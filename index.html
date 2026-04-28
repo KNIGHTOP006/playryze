@@ -429,6 +429,29 @@ section { padding: 120px 48px; }
 }
 .gallery-item:hover .gallery-overlay { opacity: 1; }
 .gallery-tag { font-size: 11px; color: var(--lime); letter-spacing: 2px; text-transform: uppercase; font-family: 'Space Mono', monospace; }
+.gallery-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(1.02) contrast(1.02);
+}
+.gallery-item.has-photo .gallery-visual { padding: 0; }
+.gallery-item.has-photo .gallery-photo { transition: transform 0.5s ease; }
+.gallery-item.has-photo:hover .gallery-photo { transform: scale(1.05); }
+.gallery-empty {
+  grid-column: 1 / -1;
+  min-height: 220px;
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px;
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  line-height: 1.8;
+}
 
 /* Gallery placeholder visuals */
 .gv-1 { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); }
@@ -925,7 +948,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   <div class="tournament-wrapper">
     <div>
       <div class="t-label">Featured Tournament</div>
-      <h2 class="t-headline">PlayRyze <span>5v5</span><br>Bengaluru Cup</h2>
+      <h2 class="t-headline">PlayRyze <span>5v5</span><br>League</h2>
       <p class="t-desc">Bengaluru's most anticipated youth football tournament is here. Compete on premium turf, get covered by professional media, and fight for the biggest prize pool in the city.</p>
       <div class="t-details reveal">
         <div class="t-detail">
@@ -1041,50 +1064,8 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
 <section class="gallery-section" id="gallery">
   <div class="section-tag reveal" style="color:rgba(255,255,255,0.3)">Gallery</div>
   <h2 class="section-headline reveal reveal-delay-1" style="color:var(--white)">MOMENTS THAT<br><span style="color:var(--lime)">DEFINE</span> YOU</h2>
-  <div class="gallery-grid reveal reveal-delay-2">
-    <div class="gallery-item">
-      <div class="gallery-visual gv-1">
-        <svg width="120" height="120" viewBox="0 0 120 120" fill="none" opacity="0.3">
-          <circle cx="60" cy="60" r="56" stroke="#B6FF00" stroke-width="2"/>
-          <path d="M60 20L72 52L106 52L78 72L88 104L60 84L32 104L42 72L14 52L48 52Z" fill="none" stroke="#B6FF00" stroke-width="2"/>
-        </svg>
-      </div>
-      <div class="gallery-overlay"><span class="gallery-tag">Match Action</span></div>
-    </div>
-    <div class="gallery-item">
-      <div class="gallery-visual gv-2">
-        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" opacity="0.4">
-          <path d="M40 8L52 32H76L56 48L64 72L40 56L16 72L24 48L4 32H28Z" fill="#B6FF00"/>
-        </svg>
-      </div>
-      <div class="gallery-overlay"><span class="gallery-tag">Champions</span></div>
-    </div>
-    <div class="gallery-item">
-      <div class="gallery-visual gv-3">
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" opacity="0.4">
-          <rect x="8" y="20" width="48" height="36" rx="2" stroke="#B6FF00" stroke-width="2"/>
-          <path d="M16 20V16C16 10.477 20.477 6 26 6H38C43.523 6 48 10.477 48 16V20" stroke="#B6FF00" stroke-width="2"/>
-          <circle cx="32" cy="38" r="8" stroke="#B6FF00" stroke-width="2"/>
-        </svg>
-      </div>
-      <div class="gallery-overlay"><span class="gallery-tag">Trophy Moments</span></div>
-    </div>
-    <div class="gallery-item">
-      <div class="gallery-visual gv-4">
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:rgba(182,255,0,0.3);letter-spacing:4px;">PREVIOUS<br>WINNERS</span>
-      </div>
-      <div class="gallery-overlay"><span class="gallery-tag">Previous Winners</span></div>
-    </div>
-    <div class="gallery-item">
-      <div class="gallery-visual gv-5">
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" opacity="0.4">
-          <rect x="4" y="8" width="56" height="48" rx="4" stroke="#B6FF00" stroke-width="2"/>
-          <circle cx="22" cy="26" r="8" stroke="#B6FF00" stroke-width="2"/>
-          <path d="M4 44L20 32L30 42L44 28L60 44" stroke="#B6FF00" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="gallery-overlay"><span class="gallery-tag">Media Coverage</span></div>
-    </div>
+  <div class="gallery-grid reveal reveal-delay-2" id="galleryGrid">
+    <div class="gallery-empty">Loading gallery from Drive...</div>
   </div>
   <div style="text-align:center; margin-top:40px;" class="reveal">
     <a href="https://www.instagram.com/play.ryze/" target="_blank" class="btn-outline" style="border-color:rgba(255,255,255,0.2);">Follow @playryze on Instagram</a>
@@ -1769,6 +1750,7 @@ reveals.forEach(el => observer.observe(el));
 let currentStep = 1;
 const totalSteps = 4;
 const REGISTRATION_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzU38KUFLcT6QhGLLJyS6rZ6ISa4hEMUAYBVhwXRQf3mV6Ddler77fdP_28NHMDkh3d/exec';
+const GALLERY_LIMIT = 12;
 
 function getRegistrationPayload() {
   const fileInput = document.getElementById('fileInput');
@@ -1917,6 +1899,78 @@ function handleUpload(input) {
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+}
+
+function formatGalleryLabel(name) {
+  const cleaned = String(name || 'PlayRyze Moment')
+    .replace(/\.[a-z0-9]+$/i, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!cleaned) return 'PlayRyze Moment';
+
+  return cleaned.length > 32 ? cleaned.slice(0, 32).trim() + '...' : cleaned;
+}
+
+function renderGallery(items) {
+  const galleryGrid = document.getElementById('galleryGrid');
+  if (!galleryGrid) return;
+
+  if (!items.length) {
+    galleryGrid.innerHTML = '<div class="gallery-empty">Add image files to your Google Drive gallery folder and they will show up here automatically.</div>';
+    return;
+  }
+
+  galleryGrid.innerHTML = items.slice(0, GALLERY_LIMIT).map((item) => {
+    const imageUrl = escapeHtml(item.imageUrl || item.fullImageUrl || '');
+    const fullImageUrl = escapeHtml(item.fullImageUrl || item.imageUrl || '#');
+    const alt = escapeHtml(item.alt || item.name || 'PlayRyze gallery image');
+    const label = escapeHtml(formatGalleryLabel(item.name));
+
+    return `
+      <a class="gallery-item has-photo" href="${fullImageUrl}" target="_blank" rel="noopener noreferrer" aria-label="${alt}">
+        <div class="gallery-visual">
+          <img class="gallery-photo" src="${imageUrl}" alt="${alt}" loading="lazy">
+        </div>
+        <div class="gallery-overlay"><span class="gallery-tag">${label}</span></div>
+      </a>
+    `;
+  }).join('');
+}
+
+async function loadGallery() {
+  const galleryGrid = document.getElementById('galleryGrid');
+  if (!galleryGrid || REGISTRATION_WEBHOOK_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') return;
+
+  try {
+    const res = await fetch(REGISTRATION_WEBHOOK_URL + '?t=' + Date.now(), {
+      method: 'POST',
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({ action: 'gallery', ts: Date.now() })
+    });
+    const json = await res.json();
+    if (!res.ok || !json.ok) {
+      throw new Error(json.error || 'Unable to load gallery.');
+    }
+
+    renderGallery(Array.isArray(json.items) ? json.items : []);
+  } catch (error) {
+    galleryGrid.innerHTML = '<div class="gallery-empty">Gallery is temporarily unavailable. Add photos to Drive and redeploy the Apps Script if this is your first setup.</div>';
+  }
+}
+
 let fixturesData = null;
 let currentGroup = 'A';
 
@@ -2107,11 +2161,15 @@ function renderAllPanels() {
   if (lu && lu.textContent.startsWith('Loading')) lu.textContent = 'Pre-tournament schedule · Updates live on match day';
 }
 
+loadGallery();
 loadFixtures();
+setInterval(loadGallery, 60000);
 setInterval(loadFixtures, 15000);
+window.addEventListener('focus', loadGallery);
 window.addEventListener('focus', loadFixtures);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
+    loadGallery();
     loadFixtures();
   }
 });
