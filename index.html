@@ -749,8 +749,43 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   .tournament-section { padding: 64px 20px; }
   .t-details { grid-template-columns: 1fr 1fr; }
   .why-grid { grid-template-columns: 1fr; }
-  .gallery-grid { grid-template-columns: 1fr; }
-  .gallery-item:first-child, .gallery-item:nth-child(4) { grid-column: span 1; }
+  .gallery-section { padding-left: 0; padding-right: 0; }
+  .gallery-section .section-tag,
+  .gallery-section .section-headline,
+  .gallery-section > .reveal:last-child { padding-left: 20px; padding-right: 20px; }
+  .gallery-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(78vw, 1fr);
+    grid-template-rows: none;
+    gap: 12px;
+    margin-top: 40px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding: 0 20px 8px;
+    scrollbar-width: none;
+  }
+  .gallery-grid::-webkit-scrollbar { display: none; }
+  .gallery-item,
+  .gallery-item:first-child,
+  .gallery-item:nth-child(4) {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 240px;
+    scroll-snap-align: start;
+    cursor: default;
+  }
+  .gallery-item:first-child { min-height: 320px; }
+  .gallery-item:nth-child(3),
+  .gallery-item:nth-child(5) { min-height: 280px; }
+  .gallery-overlay {
+    opacity: 1;
+    padding: 18px;
+    background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.18) 68%, transparent 100%);
+  }
+  .gallery-visual { font-size: 48px; }
+  .gallery-tag { font-size: 10px; letter-spacing: 1.6px; }
   .sponsors-grid { grid-template-columns: repeat(2, 1fr); }
   .sponsors-top { flex-direction: column; align-items: flex-start; gap: 24px; }
   .sponsor-cta { flex-direction: column; gap: 24px; }
