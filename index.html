@@ -2136,7 +2136,7 @@ function renderGallery(categories) {
 
 async function loadGallery() {
   const galleryGrid = document.getElementById('galleryGrid');
-  if (!galleryGrid || REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbxychZk4Pv2GQ5msPhun62WFDaICaPAeALsffsMacJXPhXS0VcRiJdDJO0KUuzEmvCT/exec') return;
+  if (!galleryGrid) return;
 
   try {
     const res = await fetch(REGISTRATION_WEBHOOK_URL + '?t=' + Date.now(), {
@@ -2153,8 +2153,13 @@ async function loadGallery() {
     }
 
     renderGallery(Array.isArray(json.categories) ? json.categories : []);
+    galleryGrid.style.opacity = '1';
+    galleryGrid.style.transform = 'none';
+    galleryGrid.classList.add('visible');
   } catch (error) {
-    galleryGrid.innerHTML = '<div class="gallery-empty">Gallery is temporarily unavailable. Add category subfolders in Drive and redeploy the Apps Script if this is your first setup.</div>';
+    galleryGrid.innerHTML = '<div class="gallery-empty">Gallery coming soon. Follow us on Instagram for the latest moments.</div>';
+    galleryGrid.style.opacity = '1';
+    galleryGrid.classList.add('visible');
   }
 }
 
