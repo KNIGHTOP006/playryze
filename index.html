@@ -1872,7 +1872,7 @@ reveals.forEach(el => observer.observe(el));
 // FORM STEPS
 let currentStep = 1;
 const totalSteps = 4;
-const REGISTRATION_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzDpT7p9v6sVqTBNEDP1FyJMEerrhiIsa0W-mAOeespvuCYNcUXVwECIHiQSJkMTr7G/exec';
+const REGISTRATION_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxychZk4Pv2GQ5msPhun62WFDaICaPAeALsffsMacJXPhXS0VcRiJdDJO0KUuzEmvCT/exec';
 const GALLERY_CATEGORY_CONFIG = [
   { key: 'match-action', title: 'Match Action', className: 'gv-1', placeholder: '<svg width="120" height="120" viewBox="0 0 120 120" fill="none" opacity="0.3"><circle cx="60" cy="60" r="56" stroke="#B6FF00" stroke-width="2"/><path d="M60 20L72 52L106 52L78 72L88 104L60 84L32 104L42 72L14 52L48 52Z" fill="none" stroke="#B6FF00" stroke-width="2"/></svg>' },
   { key: 'champions', title: 'Champions', className: 'gv-2', placeholder: '<svg width="80" height="80" viewBox="0 0 80 80" fill="none" opacity="0.4"><path d="M40 8L52 32H76L56 48L64 72L40 56L16 72L24 48L4 32H28Z" fill="#B6FF00"/></svg>' },
@@ -1978,7 +1978,7 @@ async function submitForm() {
   const submitButton = document.getElementById('submitRegistrationBtn');
 
   try {
-    if (REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbzDpT7p9v6sVqTBNEDP1FyJMEerrhiIsa0W-mAOeespvuCYNcUXVwECIHiQSJkMTr7G/exec') {
+    if (REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbxychZk4Pv2GQ5msPhun62WFDaICaPAeALsffsMacJXPhXS0VcRiJdDJO0KUuzEmvCT/exec') {
       throw new Error('Add your Google Apps Script web app URL before using the live form.');
     }
 
@@ -2136,7 +2136,7 @@ function renderGallery(categories) {
 
 async function loadGallery() {
   const galleryGrid = document.getElementById('galleryGrid');
-  if (!galleryGrid || REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbzDpT7p9v6sVqTBNEDP1FyJMEerrhiIsa0W-mAOeespvuCYNcUXVwECIHiQSJkMTr7G/exec') return;
+  if (!galleryGrid || REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbxychZk4Pv2GQ5msPhun62WFDaICaPAeALsffsMacJXPhXS0VcRiJdDJO0KUuzEmvCT/exec') return;
 
   try {
     const res = await fetch(REGISTRATION_WEBHOOK_URL + '?t=' + Date.now(), {
@@ -2397,7 +2397,7 @@ async function submitVolunteer() {
   const submitButton = document.getElementById('submitVolunteerBtn');
 
   try {
-    if (REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbzDpT7p9v6sVqTBNEDP1FyJMEerrhiIsa0W-mAOeespvuCYNcUXVwECIHiQSJkMTr7G/exec') {
+    if (REGISTRATION_WEBHOOK_URL === 'https://script.google.com/macros/s/AKfycbxychZk4Pv2GQ5msPhun62WFDaICaPAeALsffsMacJXPhXS0VcRiJdDJO0KUuzEmvCT/exec') {
       throw new Error('Add your Google Apps Script web app URL before using the live volunteer form.');
     }
 
