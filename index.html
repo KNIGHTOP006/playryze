@@ -1458,7 +1458,6 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
   <h2 class="section-headline reveal reveal-delay-1">TOURNAMENT<br>HQ</h2>
   <div class="dash-tabs" id="dashTabs">
     <button class="dash-tab active" onclick="switchMainTab('group-stage', this)">Group Stage</button>
-    <button class="dash-tab" onclick="switchMainTab('round2', this)">Round 2</button>
     <button class="dash-tab" onclick="switchMainTab('semis', this)">Semi Finals</button>
     <button class="dash-tab" onclick="switchMainTab('final', this)">Final</button>
     <button class="dash-tab" onclick="switchMainTab('downloads', this)">Downloads</button>
@@ -1470,16 +1469,8 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06);
     <div class="group-tabs" id="groupTabs">
       <button class="group-tab active" onclick="switchGroup('A', this)">Group A</button>
       <button class="group-tab" onclick="switchGroup('B', this)">Group B</button>
-      <button class="group-tab" onclick="switchGroup('C', this)">Group C</button>
-      <button class="group-tab" onclick="switchGroup('D', this)">Group D</button>
-      <button class="group-tab" onclick="switchGroup('E', this)">Group E</button>
     </div>
     <div id="groupContent"><div class="dash-loading">Fetching live data</div></div>
-  </div>
-
-  <!-- ROUND 2 -->
-  <div class="dash-panel" id="tab-round2">
-    <div id="round2Content"><div class="dash-error">Fixtures will appear here once Round 2 begins.</div></div>
   </div>
 
   <!-- SEMIS -->
@@ -2187,10 +2178,10 @@ const STATIC_FIXTURES = (function() {
   const groups = { A:[], B:[], C:[], D:[], E:[] };
   const teams = {
     A: ['Team 1','Team 2','Team 3','Team 4','Team 5'],
-    B: ['Team 6','Team 7','Team 8','Team 9','Team 10'],
-    C: ['Team 11','Team 12','Team 13','Team 14','Team 15'],
-    D: ['Team 16','Team 17','Team 18','Team 19','Team 20'],
-    E: ['Team 21','Team 22','Team 23','Team 24','Team 25']
+    B: ['Team 6','Team 7','Team 8','Team 9','Team 10','Team 11'],
+    C: ['Team 12','Team 13','Team 14','Team 15','Team 16'],
+    D: ['Team 17','Team 18','Team 19','Team 20','Team 21'],
+    E: ['Team 22','Team 23','Team 24','Team 25','Team 26']
   };
   let matchNo = 1;
   ['A','B','C','D','E'].forEach(g => {
